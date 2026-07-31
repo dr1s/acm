@@ -1,0 +1,63 @@
+#!/bin/bash
+#
+# Unified AzerothCore server management command.
+#
+# Usage: ./acm <command> [options]
+#
+
+SCRIPT_DIR="$(cd "$(dirname "${0}")" && pwd)"
+source "${SCRIPT_DIR}/lib/init.sh"
+
+show_usage() {
+    cat <<'EOF'
+Usage: ./acm <command> [options]
+
+Commands:
+  setup              Clone/update repos and rebuild the stack
+  start              Start the compose stack
+  run                Start stack, launch game, wait, backup, shutdown
+  stop               Stop the running stack
+  backup             Backup databases and configs
+  restore            Restore a database backup
+  paragon            Paragon Anniversary install/uninstall subcommands
+  create-account     Create a new WoW account with GM level 3
+  console            Attach to the running worldserver console
+  help               Show this help message
+
+Run './acm <command> --help' for command-specific options.
+EOF
+}
+
+main() {
+    if [ $# -eq 0 ]; then
+        show_usage
+        exit 1
+    fi
+
+    local COMMAND="${1}"
+    shift
+
+    case "${COMMAND}" in
+        setup|start|run|stop|backup|restore|paragon|create-account|console)
+            local COMMAND_FILE="${SCRIPT_DIR}/lib/commands/${COMMAND}.sh"
+            if [ ! -f "${COMMAND_FILE}" ]; then
+                log_error "Command implementation not found: ${COMMAND_FILE}"
+                exit 1
+            fi
+            source "${COMMAND_FILE}"
+            local FUNCTION="command_${COMMAND//-/_}"
+            "${FUNCTION}" "$@"
+            ;;
+        help|-h|--help)
+            show_usage
+            exit 0
+            ;;
+        *)
+            log_error "Unknown command: ${COMMAND}"
+            show_usage
+            exit 1
+            ;;
+    esac
+}
+
+main "$@"

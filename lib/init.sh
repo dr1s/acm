@@ -1,0 +1,38 @@
+#!/bin/bash
+#
+# Environment initialization. Source this first in every command path.
+#
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
+source "${SCRIPT_DIR}/lib/logging.sh"
+source "${SCRIPT_DIR}/lib/config.sh"
+
+init_environment() {
+    local CONFIG_FILE="${1:-}"
+    if [ -z "${CONFIG_FILE}" ]; then
+        CONFIG_FILE="${SCRIPT_DIR}/conf/wowserver.conf"
+    fi
+
+    if [ -f "${CONFIG_FILE}" ]; then
+        local NAME
+        NAME="$(read_config_value NAME "${CONFIG_FILE}")"
+        if [ -n "${NAME}" ]; then
+            CONFIG_NAME="${NAME}"
+            DOCKER_IMAGE_TAG="${NAME}"
+        fi
+    fi
+
+    CONFIG_NAME="${CONFIG_NAME:-server}"
+    DOCKER_IMAGE_TAG="${DOCKER_IMAGE_TAG:-master}"
+    COMPOSE_PROJECT="${COMPOSE_PROJECT:-${CONFIG_NAME}}"
+    export CONFIG_NAME
+    export DOCKER_IMAGE_TAG
+    export COMPOSE_PROJECT
+    WORK_DIR="server/${CONFIG_NAME}"
+
+    mkdir -p "${SCRIPT_DIR}/${WORK_DIR}"
+    cd "${SCRIPT_DIR}/${WORK_DIR}"
+}

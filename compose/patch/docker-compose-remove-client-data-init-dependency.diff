@@ -1,0 +1,5 @@
+--- docker-compose.yml
++++ docker-compose.yml
+@@ -11,2 +10,0 @@
+-      ac-client-data-init:
+-        condition: service_completed_successfully
