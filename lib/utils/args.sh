@@ -1,4 +1,4 @@
-#!/bin/bash
+ #!/bin/bash
 #
 # Shared command-line argument helpers.
 #

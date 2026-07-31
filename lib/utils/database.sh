@@ -3,7 +3,7 @@
 # MySQL helpers for the ac-database container.
 #
 
-source "${SCRIPT_DIR}/lib/container.sh"
+source "${SCRIPT_DIR}/lib/utils/container.sh"
 
 get_db_password() {
     echo "${DOCKER_DB_ROOT_PASSWORD:-password}"

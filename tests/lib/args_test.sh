@@ -1,6 +1,6 @@
 #!/bin/bash
-source "$(dirname "${BASH_SOURCE[0]}")/../../lib/config.sh"
-source "$(dirname "${BASH_SOURCE[0]}")/../../lib/args.sh"
+source "$(dirname "${BASH_SOURCE[0]}")/../../lib/utils/config.sh"
+source "$(dirname "${BASH_SOURCE[0]}")/../../lib/utils/args.sh"
 
 fail() { echo "FAIL: ${1}"; exit 1; }
 

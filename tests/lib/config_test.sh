@@ -1,5 +1,5 @@
 #!/bin/bash
-source "$(dirname "${BASH_SOURCE[0]}")/../../lib/config.sh"
+source "$(dirname "${BASH_SOURCE[0]}")/../../lib/utils/config.sh"
 
 TMP=$(mktemp)
 cat > "${TMP}" <<'EOF'

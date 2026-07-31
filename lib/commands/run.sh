@@ -3,8 +3,8 @@
 # acm run command.
 #
 
-source "${SCRIPT_DIR}/lib/args.sh"
-source "${SCRIPT_DIR}/lib/run.sh"
+source "${SCRIPT_DIR}/lib/utils/args.sh"
+source "${SCRIPT_DIR}/lib/utils/run.sh"
 
 show_run_help() {
     cat <<'EOF'

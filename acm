@@ -6,7 +6,7 @@
 #
 
 SCRIPT_DIR="$(cd "$(dirname "${0}")" && pwd)"
-source "${SCRIPT_DIR}/lib/init.sh"
+source "${SCRIPT_DIR}/lib/utils/init.sh"
 
 show_usage() {
     cat <<'EOF'
@@ -19,7 +19,7 @@ Commands:
   stop               Stop the running stack
   backup             Backup databases and configs
   restore            Restore a database backup
-  paragon            Paragon Anniversary install/uninstall subcommands
+  bundle             Install/manage bundles (e.g. paragon)
   create-account     Create a new WoW account with GM level 3
   console            Attach to the running worldserver console
   help               Show this help message
@@ -38,7 +38,7 @@ main() {
     shift
 
     case "${COMMAND}" in
-        setup|start|run|stop|backup|restore|paragon|create-account|console)
+        setup|start|run|stop|backup|restore|bundle|create-account|console)
             local COMMAND_FILE="${SCRIPT_DIR}/lib/commands/${COMMAND}.sh"
             if [ ! -f "${COMMAND_FILE}" ]; then
                 log_error "Command implementation not found: ${COMMAND_FILE}"

@@ -4,10 +4,10 @@
 # Used by the start, run, and stop commands.
 #
 
-source "${SCRIPT_DIR}/lib/args.sh"
-source "${SCRIPT_DIR}/lib/container.sh"
-source "${SCRIPT_DIR}/lib/database.sh"
-source "${SCRIPT_DIR}/lib/backup.sh"
+source "${SCRIPT_DIR}/lib/utils/args.sh"
+source "${SCRIPT_DIR}/lib/utils/container.sh"
+source "${SCRIPT_DIR}/lib/utils/database.sh"
+source "${SCRIPT_DIR}/lib/utils/backup.sh"
 
 start_stack() {
     log_info "Starting compose stack..."

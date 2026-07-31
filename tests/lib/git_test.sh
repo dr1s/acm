@@ -1,6 +1,6 @@
 #!/bin/bash
-source "$(dirname "${BASH_SOURCE[0]}")/../../lib/logging.sh"
-source "$(dirname "${BASH_SOURCE[0]}")/../../lib/git.sh"
+source "$(dirname "${BASH_SOURCE[0]}")/../../lib/utils/logging.sh"
+source "$(dirname "${BASH_SOURCE[0]}")/../../lib/utils/git.sh"
 
 fail() { echo "FAIL: ${1}"; exit 1; }
 

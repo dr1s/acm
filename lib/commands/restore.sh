@@ -3,9 +3,9 @@
 # acm restore command.
 #
 
-source "${SCRIPT_DIR}/lib/args.sh"
-source "${SCRIPT_DIR}/lib/container.sh"
-source "${SCRIPT_DIR}/lib/database.sh"
+source "${SCRIPT_DIR}/lib/utils/args.sh"
+source "${SCRIPT_DIR}/lib/utils/container.sh"
+source "${SCRIPT_DIR}/lib/utils/database.sh"
 
 show_restore_help() {
     cat <<'EOF'

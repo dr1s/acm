@@ -1,28 +1,52 @@
 #!/bin/bash
 #
-# acm paragon command.
+# Paragon bundle command implementation.
 #
 
-source "${SCRIPT_DIR}/lib/args.sh"
-source "${SCRIPT_DIR}/lib/container.sh"
-source "${SCRIPT_DIR}/lib/database.sh"
-source "${SCRIPT_DIR}/lib/paragon.sh"
+source "${SCRIPT_DIR}/lib/utils/args.sh"
+source "${SCRIPT_DIR}/lib/utils/container.sh"
+source "${SCRIPT_DIR}/lib/utils/database.sh"
+
+PARAGON_REPO="https://github.com/dr1s/lua-paragon-anniversary.git"
+PARAGON_DIR="${SCRIPT_DIR}/setup-cache/lua-paragon-anniversary"
+
+paragon_drop_existing_databases() {
+    local DB_ROOT_PASSWORD="${1}"
+    local DB_NAME="${2}"
+    log_info "Dropping existing paragon databases..."
+    container_exec_database_mysql "${DB_ROOT_PASSWORD}" \
+        -e "SET FOREIGN_KEY_CHECKS=0; DROP DATABASE IF EXISTS \`${DB_NAME}\`; DROP DATABASE IF EXISTS \`acore_ale\`; SET FOREIGN_KEY_CHECKS=1;"
+}
+
+paragon_remove_lua_scripts() {
+    local SERVER_DIR="${SCRIPT_DIR}/${WORK_DIR}"
+    local LUA_SCRIPTS_DIR="${SERVER_DIR}/lua_scripts"
+    local TARGET="${LUA_SCRIPTS_DIR}/paragon"
+
+    if [ -d "${TARGET}" ]; then
+        log_info "Removing ${TARGET}..."
+        rm -rf "${TARGET}"
+    else
+        log_info "No synced Lua scripts found at ${TARGET}."
+    fi
+}
+
 
 show_paragon_help() {
     cat <<'EOF'
-Usage: ./acm paragon <subcommand> [options]
+Usage: ./acm bundle paragon <subcommand> [options]
 
 Subcommands:
   install       Install Paragon Anniversary SQL schema and sync Lua scripts
   uninstall     Drop Paragon databases and remove synced Lua scripts
 
-Run './acm paragon <subcommand> --help' for subcommand-specific options.
+Run './acm bundle paragon <subcommand> --help' for subcommand-specific options.
 EOF
 }
 
 show_paragon_install_help() {
     cat <<'EOF'
-Usage: ./acm paragon install [OPTIONS] [config-file]
+Usage: ./acm bundle paragon install [OPTIONS] [config-file]
 
 Install Paragon Anniversary SQL schema and sync Lua scripts.
 
@@ -35,7 +59,7 @@ EOF
 
 show_paragon_uninstall_help() {
     cat <<'EOF'
-Usage: ./acm paragon uninstall [OPTIONS] [config-file]
+Usage: ./acm bundle paragon uninstall [OPTIONS] [config-file]
 
 Drop Paragon databases and remove synced Lua scripts.
 
@@ -172,7 +196,7 @@ verify_installation() {
     fi
 }
 
-command_paragon_install() {
+bundle_paragon_install() {
     local SKIP_GIT=false
     local DATABASE_NAME="acore_ale"
     local DATABASE_NAME_PROVIDED=false
@@ -242,7 +266,7 @@ command_paragon_install() {
     log_info "Repository available at: ${PARAGON_DIR}"
 }
 
-command_paragon_uninstall() {
+bundle_paragon_uninstall() {
     local DATABASE_NAME="acore_ale"
 
     local arg
@@ -286,7 +310,7 @@ command_paragon_uninstall() {
     log_info "Paragon uninstalled."
 }
 
-command_paragon() {
+bundle_paragon() {
     if [ $# -eq 0 ]; then
         show_paragon_help
         exit 1
@@ -296,8 +320,8 @@ command_paragon() {
     shift
 
     case "${SUBCOMMAND}" in
-        install) command_paragon_install "$@" ;;
-        uninstall) command_paragon_uninstall "$@" ;;
+        install) bundle_paragon_install "$@" ;;
+        uninstall) bundle_paragon_uninstall "$@" ;;
         help|-h|--help) show_paragon_help; exit 0 ;;
         *) log_error "Unknown paragon subcommand: ${SUBCOMMAND}"; show_paragon_help; exit 1 ;;
     esac

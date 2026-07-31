@@ -3,8 +3,8 @@
 # acm console command.
 #
 
-source "${SCRIPT_DIR}/lib/args.sh"
-source "${SCRIPT_DIR}/lib/container.sh"
+source "${SCRIPT_DIR}/lib/utils/args.sh"
+source "${SCRIPT_DIR}/lib/utils/container.sh"
 
 show_console_help() {
     cat <<'EOF'

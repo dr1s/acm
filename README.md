@@ -85,8 +85,8 @@ All commands accept an optional config file path (defaults to `./conf/wowserver.
 | `acm stop` | Stop the running stack. |
 | `acm backup` | Backup databases and configs, stopping worldserver/authserver first. `--skip-stop` to leave them running. |
 | `acm restore` | Restore a database backup, then shut down. |
-| `acm paragon install` | Install Paragon Anniversary SQL schema and sync lua scripts. `--skip-git` to skip clone, `--database` to set custom DB name. |
-| `acm paragon uninstall` | Drop Paragon databases and remove synced lua scripts. `--database` to set custom DB name. |
+| `acm bundle paragon install` | Install Paragon Anniversary SQL schema and sync lua scripts. `--skip-git` to skip clone, `--database` to set custom DB name. |
+| `acm bundle paragon uninstall` | Drop Paragon databases and remove synced lua scripts. `--database` to set custom DB name. |
 | `acm create-account` | Create a new WoW account with GM level 3 on the running worldserver (requires `expect`). |
 | `acm console` | Attach to the running worldserver console (Ctrl+P then Ctrl+Q to detach). |
 
@@ -244,17 +244,20 @@ MODULE_REPO=https://github.com/dr1s/lua-paragon-anniversary.git@main#serverside/
 │   ├── podman-compose.override.yml
 │   └── patch/                        # Compose patches
 ├── lib/
-│   ├── init.sh                     # Environment initialization
-│   ├── logging.sh                  # Logging helpers
-│   ├── config.sh                   # Config file parsing
-│   ├── args.sh                     # Argument parsing helpers
-│   ├── git.sh                      # Git/repo helpers
-│   ├── container.sh                # Container/compose helpers
-│   ├── database.sh                 # Database helpers
-│   ├── backup.sh                   # Backup and retention helpers
-│   ├── run.sh                      # Shared start/stop/runtime helpers
-│   ├── paragon.sh                  # Paragon Anniversary helpers
+│   ├── utils/
+│   │   ├── init.sh                     # Environment initialization
+│   │   ├── logging.sh                  # Logging helpers
+│   │   ├── config.sh                   # Config file parsing
+│   │   ├── args.sh                     # Argument parsing helpers
+│   │   ├── git.sh                      # Git/repo helpers
+│   │   ├── container.sh                # Container/compose helpers
+│   │   ├── database.sh                 # Database helpers
+│   │   ├── backup.sh                   # Backup and retention helpers
+│   │   ├── run.sh                      # Shared start/stop/runtime helpers
+│   ├── bundles/
+│   │   └── paragon.sh                  # Paragon Anniversary helpers
 │   └── commands/
+│       ├── bundle.sh
 │       ├── setup.sh
 │       ├── start.sh
 │       ├── run.sh
@@ -272,9 +275,6 @@ MODULE_REPO=https://github.com/dr1s/lua-paragon-anniversary.git@main#serverside/
 │       ├── config_test.sh
 │       ├── args_test.sh
 │       └── git_test.sh
-├── DESIGN.md                       # Detailed design and command lifecycles
-├── patch/                          # Optional SQL patches
-│   └── sql/
 ├── backups/                        # Database and config backups
 │   └── db_backup_<CONFIG_NAME>_*.sql.gz
 └── server/
