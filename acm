@@ -38,24 +38,20 @@ main() {
     shift
 
     case "${COMMAND}" in
-        setup|start|run|stop|backup|restore|bundle|create-account|console)
-            local COMMAND_FILE="${SCRIPT_DIR}/lib/commands/${COMMAND}.sh"
-            if [ ! -f "${COMMAND_FILE}" ]; then
-                log_error "Command implementation not found: ${COMMAND_FILE}"
-                exit 1
-            fi
-            source "${COMMAND_FILE}"
-            local FUNCTION="command_${COMMAND//-/_}"
-            "${FUNCTION}" "$@"
-            ;;
         help|-h|--help)
             show_usage
             exit 0
             ;;
         *)
-            log_error "Unknown command: ${COMMAND}"
-            show_usage
-            exit 1
+            local COMMAND_FILE="${SCRIPT_DIR}/lib/commands/${COMMAND}.sh"
+            if [ ! -f "${COMMAND_FILE}" ]; then
+                log_error "Command implementation not found: ${COMMAND_FILE}"
+                show_usage
+                exit 1
+            fi
+            source "${COMMAND_FILE}"
+            local FUNCTION="command_${COMMAND//-/_}"
+            "${FUNCTION}" "$@"
             ;;
     esac
 }

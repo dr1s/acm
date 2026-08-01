@@ -26,8 +26,17 @@ command_bundle() {
     shift
 
     case "${BUNDLE}" in
-        paragon) bundle_paragon "$@" ;;
         help|-h|--help) show_bundle_help; exit 0 ;;
-        *) log_error "Unknown bundle: ${BUNDLE}"; show_bundle_help; exit 1 ;;
+        *)
+            local BUNDLE_FILE="${SCRIPT_DIR}/lib/commands/${BUNDLE}.sh"
+            if [ ! -f "${BUNDLE_FILE}" ]; then
+                log_error "Bundle implementation not found: ${BUNDLE_FILE}"
+                show_bundle_help
+                exit 1
+            fi
+            source "${BUNDLE_FILE}"
+            local BUNDLE_FUNCTION="bundle_${BUNDLE}"
+            "${BUNDLE_FUNCTION}" "$@"
+            ;;
     esac
 }
