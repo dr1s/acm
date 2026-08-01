@@ -3,6 +3,8 @@
 # Database/config backup and retention cleanup.
 #
 
+source "${SCRIPT_DIR}/lib/utils/container.sh"
+
 resolve_backup_dir() {
     local BACKUP_DIR="${BACKUP_DIR:-${SCRIPT_DIR}/backups}"
     case "${BACKUP_DIR}" in
