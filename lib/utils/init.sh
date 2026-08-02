@@ -34,3 +34,16 @@ init_environment() {
     mkdir -p "${SCRIPT_DIR}/${WORK_DIR}"
     cd "${SCRIPT_DIR}/${WORK_DIR}"
 }
+
+# init_command_environment CONFIG_FILE
+# Validates the config file exists and initializes the environment.
+init_command_environment() {
+    local CONFIG_FILE="${1}"
+
+    if [ ! -f "${CONFIG_FILE}" ]; then
+        log_error "Config file '${CONFIG_FILE}' not found."
+        exit 1
+    fi
+
+    init_environment "${CONFIG_FILE}"
+}

@@ -112,6 +112,7 @@ apply_sql_files() {
         fi
 
         if [ "${REWRITE}" = true ]; then
+            # shellcheck disable=SC2016
             sed 's/`acore_ale`/`'"${DB_NAME}"'`/g' "${REPO_DIR}/${sql_file}" > "${TEMP_DIR}/$(basename "${sql_file}")"
         else
             cp "${REPO_DIR}/${sql_file}" "${TEMP_DIR}/$(basename "${sql_file}")"
@@ -226,12 +227,7 @@ bundle_paragon_install() {
     local CONFIG_FILE
     CONFIG_FILE="$(find_config_arg "${SCRIPT_DIR}" "${@}")"
 
-    if [ ! -f "${CONFIG_FILE}" ]; then
-        log_error "Config file '${CONFIG_FILE}' not found."
-        exit 1
-    fi
-
-    init_environment "${CONFIG_FILE}"
+    init_command_environment "${CONFIG_FILE}"
 
     local DB_ROOT_PASSWORD
     DB_ROOT_PASSWORD="$(get_db_password)"
@@ -292,12 +288,7 @@ bundle_paragon_uninstall() {
     local CONFIG_FILE
     CONFIG_FILE="$(find_config_arg "${SCRIPT_DIR}" "${@}")"
 
-    if [ ! -f "${CONFIG_FILE}" ]; then
-        log_error "Config file '${CONFIG_FILE}' not found."
-        exit 1
-    fi
-
-    init_environment "${CONFIG_FILE}"
+    init_command_environment "${CONFIG_FILE}"
 
     local DB_ROOT_PASSWORD
     DB_ROOT_PASSWORD="$(get_db_password)"

@@ -75,12 +75,7 @@ command_create_account() {
     local CONFIG_FILE
     CONFIG_FILE="$(find_config_arg "${SCRIPT_DIR}" "${@}")"
 
-    if [ ! -f "${CONFIG_FILE}" ]; then
-        log_error "Config file '${CONFIG_FILE}' not found."
-        exit 1
-    fi
-
-    init_environment "${CONFIG_FILE}"
+    init_command_environment "${CONFIG_FILE}"
 
     if [ -z "$(container_ps_q ac-worldserver)" ]; then
         log_error "ac-worldserver is not running. Start the server first with: ./acm start"

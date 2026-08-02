@@ -36,12 +36,7 @@ command_run() {
     local CONFIG_FILE
     CONFIG_FILE="$(find_config_arg "${SCRIPT_DIR}" "${@}")"
 
-    if [ ! -f "${CONFIG_FILE}" ]; then
-        log_error "Config file '${CONFIG_FILE}' not found."
-        exit 1
-    fi
-
-    init_environment "${CONFIG_FILE}"
+    init_command_environment "${CONFIG_FILE}"
 
     local BACKUP_DIR
     BACKUP_DIR="$(resolve_backup_dir)"
@@ -49,5 +44,5 @@ command_run() {
     local DB_ROOT_PASSWORD
     DB_ROOT_PASSWORD="$(get_db_password)"
 
-    run_full_session "${UP_ARGS[@]}"
+    run_full_session "${CONFIG_FILE}" "${BACKUP_DIR}" "${DB_ROOT_PASSWORD}" "${CONFIG_NAME}" "${WORK_DIR}" "${SKIP_GAME}" "${UP_ARGS[@]}"
 }

@@ -49,6 +49,7 @@ main() {
                 show_usage
                 exit 1
             fi
+            # shellcheck disable=SC1090
             source "${COMMAND_FILE}"
             local FUNCTION="command_${COMMAND//-/_}"
             "${FUNCTION}" "$@"

@@ -143,6 +143,7 @@ sync_compose_override() {
     fi
 
     log_info "Creating Compose override from compose/${OVERRIDE_NAME}..."
+    # shellcheck disable=SC2016
     envsubst '${DOCKER_IMAGE_TAG}' < "${OVERRIDE_SRC}" > "${OVERRIDE_DST}"
 }
 
@@ -255,12 +256,7 @@ command_setup() {
     local CONFIG_FILE
     CONFIG_FILE="$(find_config_arg "${SCRIPT_DIR}" "${@}")"
 
-    if [ ! -f "${CONFIG_FILE}" ]; then
-        log_error "Config file '${CONFIG_FILE}' not found."
-        exit 1
-    fi
-
-    init_environment "${CONFIG_FILE}"
+    init_command_environment "${CONFIG_FILE}"
 
     if [ "${SKIP_UPDATE}" = false ]; then
         update_main_repo

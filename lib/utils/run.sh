@@ -11,10 +11,11 @@ source "${SCRIPT_DIR}/lib/utils/backup.sh"
 
 start_stack() {
     log_info "Starting compose stack..."
-    container_compose up -d "$@"
+    container_up "$@"
 }
 
 wait_for_authserver() {
+    local START_TIME="${1}"
     log_info "Services are running!"
     log_info "Waiting for authserver to be ready..."
 
@@ -39,6 +40,9 @@ wait_for_authserver() {
 }
 
 launch_game() {
+    local CONFIG_FILE="${1}"
+    local SKIP_GAME="${2:-false}"
+
     if [ "${SKIP_GAME}" = true ]; then
         return
     fi
@@ -55,6 +59,9 @@ launch_game() {
 }
 
 wait_for_game_exit() {
+    local CONFIG_FILE="${1}"
+    local SKIP_GAME="${2:-false}"
+
     if [ "${SKIP_GAME}" = true ]; then
         return
     fi
@@ -96,20 +103,33 @@ stop_stack() {
 }
 
 print_backup_summary() {
+    local BACKUP_DIR="${1}"
+    local DB_BACKUP_FILE="${2}"
+    local CFG_BACKUP_FILE="${3}"
+
     log_info "Backups saved to ${BACKUP_DIR}/"
     log_info "  Database: $(basename "${DB_BACKUP_FILE}")"
     log_info "  Config:   $(basename "${CFG_BACKUP_FILE}")"
 }
 
 run_full_session() {
+    local CONFIG_FILE="${1}"
+    local BACKUP_DIR="${2}"
+    local DB_ROOT_PASSWORD="${3}"
+    local CONFIG_NAME="${4}"
+    local WORK_DIR="${5}"
+    local SKIP_GAME="${6}"
+    shift 6
     local UP_ARGS=("$@")
 
+    local START_TIME
     START_TIME=$(date +%s)
+    # shellcheck disable=SC2119
     ensure_compose_containers_stopped
     start_stack "${UP_ARGS[@]}"
-    wait_for_authserver
-    launch_game
-    wait_for_game_exit
+    wait_for_authserver "${START_TIME}"
+    launch_game "${CONFIG_FILE}" "${SKIP_GAME}"
+    wait_for_game_exit "${CONFIG_FILE}" "${SKIP_GAME}"
     wait_for_keypress
 
     local TIMESTAMP
@@ -121,7 +141,7 @@ run_full_session() {
     DB_BACKUP_FILE="$(backup_databases "${DB_ROOT_PASSWORD}" "${BACKUP_DIR}" "${CONFIG_NAME}" "${TIMESTAMP}")"
     CFG_BACKUP_FILE="$(backup_configs "${BACKUP_DIR}" "${CONFIG_NAME}" "${TIMESTAMP}" "${WORK_DIR}")"
     cleanup_backups "${BACKUP_DIR}" "${CONFIG_NAME}"
-    print_backup_summary
+    print_backup_summary "${BACKUP_DIR}" "${DB_BACKUP_FILE}" "${CFG_BACKUP_FILE}"
     stop_database_container
     stop_stack
     log_info "Compose stack has been stopped."

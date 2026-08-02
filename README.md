@@ -26,7 +26,6 @@ This project provides a single `acm` command that manages the full lifecycle of 
 - [Environment Variables](#environment-variables)
 - [Examples](#examples)
 - [Development & Testing](#development--testing)
-- [Design Notes](#design-notes)
 
 ## Features
 
@@ -253,7 +252,7 @@ MODULE_REPO=https://github.com/dr1s/lua-paragon-anniversary.git@main#serverside/
 │   │   ├── container.sh                # Container/compose helpers
 │   │   ├── database.sh                 # Database helpers
 │   │   ├── backup.sh                   # Backup and retention helpers
-│   │   ├── run.sh                      # Shared start/stop/runtime helpers
+│   │   └── run.sh                      # Shared start/stop/runtime helpers
 │   ├── bundles/
 │   │   └── paragon.sh                  # Paragon Anniversary helpers
 │   └── commands/
@@ -264,7 +263,6 @@ MODULE_REPO=https://github.com/dr1s/lua-paragon-anniversary.git@main#serverside/
 │       ├── stop.sh
 │       ├── backup.sh
 │       ├── restore.sh
-│       ├── paragon.sh
 │       ├── create-account.sh
 │       └── console.sh
 ├── scripts/
@@ -272,9 +270,18 @@ MODULE_REPO=https://github.com/dr1s/lua-paragon-anniversary.git@main#serverside/
 ├── tests/
 │   ├── run-tests.sh
 │   └── lib/
-│       ├── config_test.sh
+│       ├── assert.sh
 │       ├── args_test.sh
-│       └── git_test.sh
+│       ├── backup_test.sh
+│       ├── config_test.sh
+│       ├── container_test.sh
+│       ├── database_test.sh
+│       ├── git_test.sh
+│       ├── init_test.sh
+│       └── run_test.sh
+├── DESIGN.md                       # Detailed design and command lifecycles
+├── patch/                          # Optional SQL patches
+│   └── sql/
 ├── backups/                        # Database and config backups
 │   └── db_backup_<CONFIG_NAME>_*.sql.gz
 └── server/

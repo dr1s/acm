@@ -10,6 +10,7 @@
 #   PARSED_MODULE_NAME - The directory name for modules/
 #   PARSED_SUBFOLDER   - The subfolder path after # (empty if none)
 #   PARSED_BRANCH      - The branch name after @ (empty if none)
+# shellcheck disable=SC2034
 parse_module_repo() {
     local LINE="${1}"
     local URL_PART="${LINE%%#*}"
@@ -23,7 +24,7 @@ parse_module_repo() {
         local AFTER_PROTOCOL="${URL_PART#*://}"
         if [[ "${AFTER_PROTOCOL}" == *"@"* ]]; then
             PARSED_BRANCH="${AFTER_PROTOCOL##*@}"
-            URL_PART="${URL_PART%@${PARSED_BRANCH}}"
+            URL_PART="${URL_PART%@"${PARSED_BRANCH}"}"
         fi
     fi
 

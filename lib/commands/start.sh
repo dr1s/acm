@@ -32,16 +32,12 @@ command_start() {
     local CONFIG_FILE
     CONFIG_FILE="$(find_config_arg "${SCRIPT_DIR}" "${@}")"
 
-    if [ ! -f "${CONFIG_FILE}" ]; then
-        log_error "Config file '${CONFIG_FILE}' not found."
-        exit 1
-    fi
-
-    init_environment "${CONFIG_FILE}"
+    init_command_environment "${CONFIG_FILE}"
 
     START_TIME=$(date +%s)
+    # shellcheck disable=SC2119
     ensure_compose_containers_stopped
     start_stack "${UP_ARGS[@]}"
-    wait_for_authserver
+    wait_for_authserver "${START_TIME}"
     log_info "Compose stack is running."
 }

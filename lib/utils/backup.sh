@@ -27,7 +27,7 @@ stop_worldserver_and_authserver() {
 
 stop_database_container() {
     log_info "Stopping database container..."
-    ${CONTAINER_CMD} stop ac-database 2>/dev/null || true
+    container_stop ac-database 2>/dev/null || true
     log_info "Waiting for database to fully stop..."
     wait_for_container_stopped ac-database 60
 }
@@ -99,40 +99,40 @@ cleanup_backups() {
     local -A KEEP_FILES
 
     local f
-    for f in "${BACKUP_DIR}"/db_backup_${CONFIG_NAME}_${TODAY}_*.sql.gz; do
+    for f in "${BACKUP_DIR}/db_backup_${CONFIG_NAME}_${TODAY}_"*.sql.gz; do
         [ -e "$f" ] && KEEP_FILES["$f"]=1
     done
-    for f in "${BACKUP_DIR}"/config_backup_${CONFIG_NAME}_${TODAY}_*.tar.gz; do
+    for f in "${BACKUP_DIR}/config_backup_${CONFIG_NAME}_${TODAY}_"*.tar.gz; do
         [ -e "$f" ] && KEEP_FILES["$f"]=1
     done
 
     local i DATE LATEST_DB LATEST_CFG
     for i in $(seq 1 $((KEEP_DAILY - 1))); do
         DATE=$(date -d "${TODAY} - ${i} days" +%Y%m%d 2>/dev/null || date -v-"${i}"d +%Y%m%d 2>/dev/null)
-        LATEST_DB=$(ls -1 "${BACKUP_DIR}"/db_backup_${CONFIG_NAME}_${DATE}_*.sql.gz 2>/dev/null | sort -r | head -1 || true)
+        LATEST_DB=$(find "${BACKUP_DIR}" -maxdepth 1 -type f -name "db_backup_${CONFIG_NAME}_${DATE}_*.sql.gz" 2>/dev/null | sort -r | head -1 || true)
         [ -n "$LATEST_DB" ] && KEEP_FILES["$LATEST_DB"]=1
-        LATEST_CFG=$(ls -1 "${BACKUP_DIR}"/config_backup_${CONFIG_NAME}_${DATE}_*.tar.gz 2>/dev/null | sort -r | head -1 || true)
+        LATEST_CFG=$(find "${BACKUP_DIR}" -maxdepth 1 -type f -name "config_backup_${CONFIG_NAME}_${DATE}_*.tar.gz" 2>/dev/null | sort -r | head -1 || true)
         [ -n "$LATEST_CFG" ] && KEEP_FILES["$LATEST_CFG"]=1
     done
 
     for i in $(seq 1 $KEEP_WEEKLY); do
         DATE=$(date -d "${TODAY} - $((i * 7)) days" +%Y%m%d 2>/dev/null || date -v-"$((i * 7))"d +%Y%m%d 2>/dev/null)
-        LATEST_DB=$(ls -1 "${BACKUP_DIR}"/db_backup_${CONFIG_NAME}_${DATE:0:8}_*.sql.gz 2>/dev/null | sort -r | head -1 || true)
+        LATEST_DB=$(find "${BACKUP_DIR}" -maxdepth 1 -type f -name "db_backup_${CONFIG_NAME}_${DATE:0:8}_*.sql.gz" 2>/dev/null | sort -r | head -1 || true)
         [ -n "$LATEST_DB" ] && KEEP_FILES["$LATEST_DB"]=1
-        LATEST_CFG=$(ls -1 "${BACKUP_DIR}"/config_backup_${CONFIG_NAME}_${DATE:0:8}_*.tar.gz 2>/dev/null | sort -r | head -1 || true)
+        LATEST_CFG=$(find "${BACKUP_DIR}" -maxdepth 1 -type f -name "config_backup_${CONFIG_NAME}_${DATE:0:8}_*.tar.gz" 2>/dev/null | sort -r | head -1 || true)
         [ -n "$LATEST_CFG" ] && KEEP_FILES["$LATEST_CFG"]=1
     done
 
     for i in $(seq 1 $KEEP_MONTHLY); do
         DATE=$(date -d "${TODAY} - ${i} months" +%Y%m 2>/dev/null || date -v-"${i}"m +%Y%m 2>/dev/null)
-        LATEST_DB=$(ls -1 "${BACKUP_DIR}"/db_backup_${CONFIG_NAME}_${DATE}??_*.sql.gz 2>/dev/null | sort -r | head -1 || true)
+        LATEST_DB=$(find "${BACKUP_DIR}" -maxdepth 1 -type f -name "db_backup_${CONFIG_NAME}_${DATE}??_*.sql.gz" 2>/dev/null | sort -r | head -1 || true)
         [ -n "$LATEST_DB" ] && KEEP_FILES["$LATEST_DB"]=1
-        LATEST_CFG=$(ls -1 "${BACKUP_DIR}"/config_backup_${CONFIG_NAME}_${DATE}??_*.tar.gz 2>/dev/null | sort -r | head -1 || true)
+        LATEST_CFG=$(find "${BACKUP_DIR}" -maxdepth 1 -type f -name "config_backup_${CONFIG_NAME}_${DATE}??_*.tar.gz" 2>/dev/null | sort -r | head -1 || true)
         [ -n "$LATEST_CFG" ] && KEEP_FILES["$LATEST_CFG"]=1
     done
 
     local DELETED=0
-    for f in "${BACKUP_DIR}"/db_backup_${CONFIG_NAME}_*.sql.gz "${BACKUP_DIR}"/config_backup_${CONFIG_NAME}_*.tar.gz; do
+    for f in "${BACKUP_DIR}/db_backup_${CONFIG_NAME}_"*.sql.gz "${BACKUP_DIR}/config_backup_${CONFIG_NAME}_"*.tar.gz; do
         [ -e "$f" ] || continue
         if [ -z "${KEEP_FILES[$f]+x}" ]; then
             log_info "Removing old backup: $(basename "$f")"
