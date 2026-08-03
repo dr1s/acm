@@ -22,7 +22,6 @@ This project provides a single `acm` command that manages the full lifecycle of 
   - [Module URL syntax](#module-url-syntax)
   - [How `acm setup` handles modules](#how-acm-setup-handles-modules)
   - [Example setup with modules](#example-setup-with-modules)
-- [Project Structure](#project-structure)
 - [Environment Variables](#environment-variables)
 - [Examples](#examples)
 - [Development & Testing](#development--testing)
@@ -84,6 +83,8 @@ All commands accept an optional config file path (defaults to `./conf/wowserver.
 | `acm stop` | Stop the running stack. |
 | `acm backup` | Backup databases and configs, stopping worldserver/authserver first. `--skip-stop` to leave them running. |
 | `acm restore` | Restore a database backup, then shut down. |
+| `acm bundle arac-updated install` | Install All races all classes dbc files. |
+| `acm bundle arac-updated uninstall` | Remove All races all classes dbc files. |
 | `acm bundle paragon install` | Install Paragon Anniversary SQL schema and sync lua scripts. `--skip-git` to skip clone, `--database` to set custom DB name. |
 | `acm bundle paragon uninstall` | Drop Paragon databases and remove synced lua scripts. `--database` to set custom DB name. |
 | `acm create-account` | Create a new WoW account with GM level 3 on the running worldserver (requires `expect`). |
@@ -230,65 +231,6 @@ MODULE_REPO=https://github.com/dr1s/lua-paragon-anniversary.git@main#serverside/
 ```bash
 # Add MODULE_REPO lines to conf/wowserver.conf, then:
 ./acm setup
-```
-
-## Project Structure
-
-```
-├── acm                     # Main command entry point
-├── conf/
-│   ├── wowserver.conf
-│   └── wowserver-solo.conf
-├── compose/
-│   ├── podman-compose.override.yml
-│   └── patch/                        # Compose patches
-├── lib/
-│   ├── utils/
-│   │   ├── init.sh                     # Environment initialization
-│   │   ├── logging.sh                  # Logging helpers
-│   │   ├── config.sh                   # Config file parsing
-│   │   ├── args.sh                     # Argument parsing helpers
-│   │   ├── git.sh                      # Git/repo helpers
-│   │   ├── container.sh                # Container/compose helpers
-│   │   ├── database.sh                 # Database helpers
-│   │   ├── backup.sh                   # Backup and retention helpers
-│   │   └── run.sh                      # Shared start/stop/runtime helpers
-│   ├── bundles/
-│   │   └── paragon.sh                  # Paragon Anniversary helpers
-│   └── commands/
-│       ├── bundle.sh
-│       ├── setup.sh
-│       ├── start.sh
-│       ├── run.sh
-│       ├── stop.sh
-│       ├── backup.sh
-│       ├── restore.sh
-│       ├── create-account.sh
-│       └── console.sh
-├── scripts/
-│   └── check.sh                    # Shell syntax checker
-├── tests/
-│   ├── run-tests.sh
-│   └── lib/
-│       ├── assert.sh
-│       ├── args_test.sh
-│       ├── backup_test.sh
-│       ├── config_test.sh
-│       ├── container_test.sh
-│       ├── database_test.sh
-│       ├── git_test.sh
-│       ├── init_test.sh
-│       └── run_test.sh
-├── DESIGN.md                       # Detailed design and command lifecycles
-├── patch/                          # Optional SQL patches
-│   └── sql/
-├── backups/                        # Database and config backups
-│   └── db_backup_<CONFIG_NAME>_*.sql.gz
-└── server/
-    └── <CONFIG_NAME>/            # Working directory for compose files and modules
-        ├── docker-compose.yml
-        ├── docker-compose.override.yml
-        └── modules/
 ```
 
 ## Environment Variables
