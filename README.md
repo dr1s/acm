@@ -296,7 +296,7 @@ MODULE_REPO=https://github.com/dr1s/lua-paragon-anniversary.git@main#serverside/
 Run the shell syntax checker:
 
 ```bash
-./scripts/check.sh
+./tests/check.sh
 ```
 
 Run the unit tests:
