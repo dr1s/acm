@@ -1,0 +1,255 @@
+# Bash completion for the AzerothCore Container Manager (acm) command.
+#
+# Bash:
+#   source /path/to/repo/completions/acm
+#   # Or install system-wide:
+#   sudo cp /path/to/repo/completions/acm /etc/bash_completion.d/
+#   # or, on some distributions:
+#   sudo cp /path/to/repo/completions/acm /usr/share/bash-completion/completions/acm
+#
+# Zsh (via bashcompinit):
+#   autoload -Uz bashcompinit && bashcompinit
+#   source /path/to/repo/completions/acm
+
+# _acm_discover_acm
+# Prints the path to the acm executable, or nothing if not found.
+# Search order:
+#   1. ./acm in the current working directory
+#   2. acm next to this completion script
+#   3. acm in $PATH
+_acm_discover_acm() {
+    local script_dir
+    script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd 2>/dev/null)"
+
+    if [ -x "./acm" ]; then
+        echo "./acm"
+    elif [ -n "${script_dir}" ] && [ -x "${script_dir}/acm" ]; then
+        echo "${script_dir}/acm"
+    elif command -v acm >/dev/null 2>&1; then
+        echo "acm"
+    fi
+}
+
+# _acm_run_acm [args...]
+# Runs acm with the supplied arguments and prints its stdout.
+# Returns 1 if acm cannot be found.
+_acm_run_acm() {
+    local acm_path
+    acm_path="$(_acm_discover_acm)"
+    if [ -z "${acm_path}" ]; then
+        return 1
+    fi
+    "${acm_path}" "$@" 2>/dev/null
+}
+
+# _acm_parse_commands <help_text>
+# Extracts the command names listed under a "Commands:" section.
+_acm_parse_commands() {
+    local help_text="${1}"
+    echo "${help_text}" | sed -n '/^Commands:/,/^$/p' | \
+        while IFS= read -r line; do
+            local token
+            token="$(echo "${line}" | awk '{print $1}')"
+            if [[ "${token}" =~ ^[a-zA-Z0-9_-]+$ ]]; then
+                echo "${token}"
+            fi
+        done
+}
+
+# _acm_parse_options <help_text>
+# Extracts option flags listed under an "Options:" section.
+# Handles lines like "  --clean  ...", "  -h, --help  ...", and "  --database <name>  ..."
+_acm_parse_options() {
+    local help_text="${1}"
+    echo "${help_text}" | sed -n '/^Options:/,/^$/p' | \
+        while IFS= read -r line; do
+            for token in ${line}; do
+                if [[ "${token}" == -* ]]; then
+                    # Strip trailing comma (e.g., "-h," -> "-h")
+                    echo "${token%,}"
+                else
+                    break
+                fi
+            done
+        done
+}
+
+# _acm_parse_bundles <help_text>
+# Extracts bundle names listed under a "Bundles:" section.
+_acm_parse_bundles() {
+    local help_text="${1}"
+    echo "${help_text}" | sed -n '/^Bundles:/,/^$/p' | \
+        while IFS= read -r line; do
+            local token
+            token="$(echo "${line}" | awk '{print $1}')"
+            if [[ "${token}" =~ ^[a-zA-Z0-9_-]+$ ]]; then
+                echo "${token}"
+            fi
+        done
+}
+
+# _acm_parse_subcommands <help_text>
+# Extracts subcommand names listed under "Subcommands:" or "Commands:".
+_acm_parse_subcommands() {
+    local help_text="${1}"
+    echo "${help_text}" | sed -n '/^\(Subcommands\|Commands\):/,/^$/p' | \
+        while IFS= read -r line; do
+            local token
+            token="$(echo "${line}" | awk '{print $1}')"
+            if [[ "${token}" =~ ^[a-zA-Z0-9_-]+$ ]]; then
+                echo "${token}"
+            fi
+        done
+}
+
+# _acm_complete_config_files <prefix>
+# Completes .conf files, preferring ./conf/ when it exists.
+_acm_complete_config_files() {
+    local prefix="${1:-}"
+    local file
+    if [ -d "./conf" ]; then
+        for file in ./conf/*.conf; do
+            [ -e "${file}" ] || continue
+            if [[ "${file}" == "${prefix}"* ]]; then
+                echo "${file}"
+            fi
+        done
+    fi
+    for file in ./*.conf; do
+        [ -e "${file}" ] || continue
+        if [[ "${file}" == "${prefix}"* ]]; then
+            echo "${file}"
+        fi
+    done
+}
+
+# _acm_complete_backup_files <prefix>
+# Completes database backup files under ./backups/.
+_acm_complete_backup_files() {
+    local prefix="${1:-}"
+    local file
+    for file in ./backups/db_backup_*.sql.gz; do
+        [ -e "${file}" ] || continue
+        if [[ "${file}" == "${prefix}"* ]]; then
+            echo "${file}"
+        fi
+    done
+}
+
+# _acm_has_config_arg [words...]
+# Returns 0 if any argument ends with .conf.
+_acm_has_config_arg() {
+    local arg
+    for arg in "$@"; do
+        if [[ "${arg}" == *.conf ]]; then
+            return 0
+        fi
+    done
+    return 1
+}
+
+# _acm
+# Main completion function registered with complete -F _acm acm.
+_acm() {
+    local cur="${COMP_WORDS[COMP_CWORD]}"
+    local first="${COMP_WORDS[1]}"
+    local second="${COMP_WORDS[2]}"
+    local third="${COMP_WORDS[3]}"
+
+    local acm_path
+    acm_path="$(_acm_discover_acm)"
+    if [ -z "${acm_path}" ]; then
+        return 1
+    fi
+
+    local top_level_help
+    top_level_help="$(_acm_run_acm --help)"
+    local commands
+    commands="$(_acm_parse_commands "${top_level_help}")"
+
+    # First word after acm -> complete commands
+    if [ "${COMP_CWORD}" -eq 1 ]; then
+        COMPREPLY=( $(compgen -W "${commands}" -- "${cur}") )
+        return 0
+    fi
+
+    # bundle <bundle> <subcommand> ...
+    if [ "${first}" = "bundle" ]; then
+        local bundle_help
+        bundle_help="$(_acm_run_acm bundle --help)"
+
+        if [ "${COMP_CWORD}" -eq 2 ]; then
+            local bundles
+            bundles="$(_acm_parse_bundles "${bundle_help}")"
+            COMPREPLY=( $(compgen -W "${bundles}" -- "${cur}") )
+            return 0
+        fi
+
+        local bundle_name="${second}"
+        local bundle_cmd_help
+        bundle_cmd_help="$(_acm_run_acm bundle "${bundle_name}" --help)"
+
+        if [ "${COMP_CWORD}" -eq 3 ]; then
+            local subcommands
+            subcommands="$(_acm_parse_subcommands "${bundle_cmd_help}")"
+            COMPREPLY=( $(compgen -W "${subcommands}" -- "${cur}") )
+            return 0
+        fi
+
+        local bundle_subcommand="${third}"
+        local subcmd_help
+        subcmd_help="$(_acm_run_acm bundle "${bundle_name}" "${bundle_subcommand}" --help)"
+        local options
+        options="$(_acm_parse_options "${subcmd_help}")"
+
+        if [[ "${cur}" == -* ]]; then
+            COMPREPLY=( $(compgen -W "${options}" -- "${cur}") )
+            return 0
+        fi
+
+        if ! _acm_has_config_arg "${COMP_WORDS[@]:3}"; then
+            COMPREPLY=( $(compgen -W "$(_acm_complete_config_files "${cur}")" -- "${cur}") )
+            return 0
+        fi
+
+        COMPREPLY=( $(compgen -f -- "${cur}") )
+        return 0
+    fi
+
+    # Non-bundle command
+    local cmd_help
+    cmd_help="$(_acm_run_acm "${first}" --help)"
+    local options
+    options="$(_acm_parse_options "${cmd_help}")"
+
+    if [[ "${cur}" == -* ]]; then
+        COMPREPLY=( $(compgen -W "${options}" -- "${cur}") )
+        return 0
+    fi
+
+    # restore: second positional argument is a backup file
+    if [ "${first}" = "restore" ]; then
+        if _acm_has_config_arg "${COMP_WORDS[@]:2}"; then
+            COMPREPLY=( $(compgen -W "$(_acm_complete_backup_files "${cur}")" -- "${cur}") )
+            return 0
+        fi
+    fi
+
+    # Config file completion for commands that accept one
+    if ! _acm_has_config_arg "${COMP_WORDS[@]:2}"; then
+        COMPREPLY=( $(compgen -W "$(_acm_complete_config_files "${cur}")" -- "${cur}") )
+        return 0
+    fi
+
+    COMPREPLY=( $(compgen -f -- "${cur}") )
+    return 0
+}
+
+if ! complete -p acm >/dev/null 2>&1; then
+    complete -F _acm acm
+fi
+
+# Also register for ./acm so completion works when invoked from the project root.
+if ! complete -p ./acm >/dev/null 2>&1; then
+    complete -F _acm ./acm
+fi

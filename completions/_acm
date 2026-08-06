@@ -1,0 +1,182 @@
+#compdef acm
+
+# Native zsh completion for acm.
+# Add this directory to your fpath and run compinit:
+#   fpath+=(/path/to/repo/completions)
+#   autoload -Uz compinit && compinit
+
+_acm_parse_section() {
+    setopt localoptions typeset_silent
+    local help_text="$1"
+    local section="$2"
+    local line
+    local in_section=0
+
+    while IFS= read -r line; do
+        if [[ "${line}" == "${section}:"* ]]; then
+            in_section=1
+            continue
+        fi
+        if [[ "${line}" == "" ]]; then
+            in_section=0
+        fi
+        if (( in_section )); then
+            local token
+            token="$(echo "${line}" | awk '{print $1}')"
+            if [[ "${token}" =~ ^[a-zA-Z0-9_-]+$ ]]; then
+                echo "${token}"
+            fi
+        fi
+    done <<< "${help_text}"
+}
+
+_acm_parse_options() {
+    setopt localoptions typeset_silent
+    local help_text="$1"
+    local line
+    local in_options=0
+
+    while IFS= read -r line; do
+        if [[ "${line}" == "Options:"* ]]; then
+            in_options=1
+            continue
+        fi
+        if [[ "${line}" == "" ]]; then
+            in_options=0
+        fi
+        if (( in_options )); then
+            for token in ${(z)line}; do
+                if [[ "${token}" == -* ]]; then
+                    echo "${token%,}"
+                else
+                    break
+                fi
+            done
+        fi
+    done <<< "${help_text}"
+}
+
+_acm_run() {
+    setopt localoptions typeset_silent
+    local acm_path="$1"
+    shift
+    "${acm_path}" "$@" 2>/dev/null
+}
+
+_acm_find() {
+    setopt localoptions typeset_silent
+    if [[ -x "./acm" ]]; then
+        echo "./acm"
+    elif command -v acm >/dev/null 2>&1; then
+        echo "acm"
+    fi
+}
+
+_acm() {
+    setopt localoptions typeset_silent
+
+    local acm_path="$(_acm_find)"
+    [[ -z "${acm_path}" ]] && return 1
+
+    local cur="${words[CURRENT]}"
+    local prev="${words[CURRENT-1]}"
+    local first="${words[2]}"
+    local second="${words[3]}"
+    local third="${words[4]}"
+
+    local top_help
+    top_help="$(_acm_run "${acm_path}" --help)"
+
+    # First word after acm -> complete commands
+    if (( CURRENT == 2 )); then
+        local -a commands=($(_acm_parse_section "${top_help}" "Commands"))
+        compadd -a commands
+        return 0
+    fi
+
+    # bundle <bundle> <subcommand> ...
+    if [[ "${first}" == "bundle" ]]; then
+        local bundle_help
+        bundle_help="$(_acm_run "${acm_path}" bundle --help)"
+
+        if (( CURRENT == 3 )); then
+            local -a bundles=($(_acm_parse_section "${bundle_help}" "Bundles"))
+            compadd -a bundles
+            return 0
+        fi
+
+        local bundle_name="${second}"
+        local bundle_cmd_help
+        bundle_cmd_help="$(_acm_run "${acm_path}" bundle "${bundle_name}" --help)"
+
+        if (( CURRENT == 4 )); then
+            local -a subcommands=($(_acm_parse_section "${bundle_cmd_help}" "Subcommands"))
+            [[ ${#subcommands} -eq 0 ]] && subcommands=($(_acm_parse_section "${bundle_cmd_help}" "Commands"))
+            compadd -a subcommands
+            return 0
+        fi
+
+        local bundle_subcommand="${third}"
+        local subcmd_help
+        subcmd_help="$(_acm_run "${acm_path}" bundle "${bundle_name}" "${bundle_subcommand}" --help)"
+        local -a options=($(_acm_parse_options "${subcmd_help}"))
+
+        if [[ "${cur}" == -* ]]; then
+            compadd -a options
+            return 0
+        fi
+
+        # Complete .conf files if no config already present
+        local has_config=false
+        local arg
+        for arg in "${words[@]:3}"; do
+            [[ "${arg}" == *.conf ]] && has_config=true
+        done
+        if [[ "${has_config}" == false ]]; then
+            _files -g '*.conf'
+            return 0
+        fi
+
+        _files
+        return 0
+    fi
+
+    # Non-bundle command
+    local cmd_help
+    cmd_help="$(_acm_run "${acm_path}" "${first}" --help)"
+    local -a options=($(_acm_parse_options "${cmd_help}"))
+
+    if [[ "${cur}" == -* ]]; then
+        compadd -a options
+        return 0
+    fi
+
+    # restore: complete backup files if config is already present
+    if [[ "${first}" == "restore" ]]; then
+        local has_config=false
+        local arg
+        for arg in "${words[@]:2}"; do
+            [[ "${arg}" == *.conf ]] && has_config=true
+        done
+        if [[ "${has_config}" == true ]]; then
+            _files -g './backups/db_backup_*.sql.gz'
+            return 0
+        fi
+    fi
+
+    # Complete .conf files if no config already present
+    local has_config=false
+    local arg
+    for arg in "${words[@]:2}"; do
+        [[ "${arg}" == *.conf ]] && has_config=true
+    done
+    if [[ "${has_config}" == false ]]; then
+        _files -g '*.conf'
+        return 0
+    fi
+
+    _files
+    return 0
+}
+
+_acm "$@"

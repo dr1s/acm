@@ -24,6 +24,7 @@ This project provides a single `acm` command that manages the full lifecycle of 
   - [Example setup with modules](#example-setup-with-modules)
 - [Environment Variables](#environment-variables)
 - [Examples](#examples)
+- [Shell Completion](#shell-completion)
 - [Development & Testing](#development--testing)
 
 ## Features
@@ -290,6 +291,44 @@ MODULE_REPO=https://github.com/dr1s/lua-paragon-anniversary.git@main#serverside/
 ./acm restore ./backups/db_backup_playerbots_20260810_120000.sql.gz
 ./acm start
 ```
+
+## Shell Completion
+
+A shell completion script is included at `completions/acm`. It dynamically completes commands, flags, bundles, subcommands, config files, and backup files.
+
+### Bash
+
+```bash
+source /path/to/repo/completions/acm
+```
+
+For a system-wide install, copy it to your distribution's completion directory:
+
+```bash
+sudo cp /path/to/repo/completions/acm /etc/bash_completion.d/
+# or, on some distributions:
+sudo cp /path/to/repo/completions/acm /usr/share/bash-completion/completions/acm
+```
+
+### Zsh
+
+A zsh completion wrapper is included at `completions/_acm`. Add the `completions` directory to your `fpath` and initialize the completion system:
+
+```zsh
+fpath+=(/path/to/repo/completions)
+autoload -Uz compinit && compinit
+```
+
+Alternatively, you can load the bash completion directly with `bashcompinit`:
+
+```zsh
+autoload -Uz bashcompinit && bashcompinit
+source /path/to/repo/completions/acm
+```
+
+### autoenv / direnv
+
+A `.env` file is included for [autoenv](https://github.com/hyperupcall/autoenv) users, and `.envrc` is a symlink to `.env` for [direnv](https://direnv.net) users. zsh users should use autoenv or load the completion manually.
 
 ## Development & Testing
 
