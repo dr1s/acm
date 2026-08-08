@@ -65,7 +65,7 @@ command_backup() {
         log_info "Starting worldserver and authserver..."
         container_up ac-worldserver ac-authserver
         START_TIME=$(date +%s)
-        wait_for_authserver
+        wait_for_authserver "${START_TIME}"
     fi
 
     log_info "Backup complete."
