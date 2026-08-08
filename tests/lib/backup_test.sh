@@ -27,11 +27,14 @@ OLD_DATE=$(date -d "${TODAY} - 10 days" +%Y%m%d 2>/dev/null || date -v-10d +%Y%m
 touch "${TMP_BACKUP_DIR}/db_backup_test_${TODAY}_120000.sql.gz"
 touch "${TMP_BACKUP_DIR}/db_backup_test_${OLD_DATE}_120000.sql.gz"
 
+CONFIG_FILE="${TMP_CONFIG}"
+export CONFIG_FILE
+
 cat > "${TMP_CONFIG}" <<'EOF'
 KEEP_ALL_BACKUPS=true
 EOF
 
-cleanup_backups "${TMP_BACKUP_DIR}" "test" "${TMP_CONFIG}"
+cleanup_backups "${TMP_BACKUP_DIR}" "test"
 [ -f "${TMP_BACKUP_DIR}/db_backup_test_${OLD_DATE}_120000.sql.gz" ] || fail "KEEP_ALL_BACKUPS should preserve old backup"
 
 # Reset and verify default retention deletes backups beyond all windows
@@ -40,7 +43,7 @@ VERY_OLD_DATE=$(date -d "${TODAY} - 400 days" +%Y%m%d 2>/dev/null || date -v-400
 touch "${TMP_BACKUP_DIR}/db_backup_test_${VERY_OLD_DATE}_120000.sql.gz"
 : > "${TMP_CONFIG}"
 
-cleanup_backups "${TMP_BACKUP_DIR}" "test" "${TMP_CONFIG}"
+cleanup_backups "${TMP_BACKUP_DIR}" "test"
 [ ! -f "${TMP_BACKUP_DIR}/db_backup_test_${VERY_OLD_DATE}_120000.sql.gz" ] || fail "default retention should delete 400-day-old backup"
 
 # Verify custom retention windows are read from config
@@ -51,7 +54,7 @@ cat > "${TMP_CONFIG}" <<'EOF'
 BACKUP_RETAIN_DAILY=1
 EOF
 
-cleanup_backups "${TMP_BACKUP_DIR}" "test" "${TMP_CONFIG}"
+cleanup_backups "${TMP_BACKUP_DIR}" "test"
 [ ! -f "${TMP_BACKUP_DIR}/db_backup_test_${YESTERDAY}_120000.sql.gz" ] || fail "custom BACKUP_RETAIN_DAILY=1 should delete yesterday's backup"
 
 BACKUP_DIR="${ORIGINAL_BACKUP_DIR}"

@@ -29,10 +29,7 @@ command_start() {
         esac
     done
 
-    local CONFIG_FILE
-    CONFIG_FILE="$(find_config_arg "${@}")"
-
-    init_command_environment "${CONFIG_FILE}"
+    init_command_environment "$@"
 
     START_TIME=$(date +%s)
     # shellcheck disable=SC2119

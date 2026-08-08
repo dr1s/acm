@@ -40,8 +40,7 @@ wait_for_authserver() {
 }
 
 launch_game() {
-    local CONFIG_FILE="${1}"
-    local SKIP_GAME="${2:-false}"
+    local SKIP_GAME="${1:-false}"
 
     if [ "${SKIP_GAME}" = true ]; then
         return
@@ -59,8 +58,7 @@ launch_game() {
 }
 
 wait_for_game_exit() {
-    local CONFIG_FILE="${1}"
-    local SKIP_GAME="${2:-false}"
+    local SKIP_GAME="${1:-false}"
 
     if [ "${SKIP_GAME}" = true ]; then
         return
@@ -113,12 +111,11 @@ print_backup_summary() {
 }
 
 run_full_session() {
-    local CONFIG_FILE="${1}"
-    local BACKUP_DIR="${2}"
-    local DB_ROOT_PASSWORD="${3}"
-    local CONFIG_NAME="${4}"
-    local SKIP_GAME="${5}"
-    shift 5
+    local BACKUP_DIR="${1}"
+    local DB_ROOT_PASSWORD="${2}"
+    local CONFIG_NAME="${3}"
+    local SKIP_GAME="${4}"
+    shift 4
     local UP_ARGS=("$@")
 
     local START_TIME
@@ -127,8 +124,8 @@ run_full_session() {
     ensure_compose_containers_stopped
     start_stack "${UP_ARGS[@]}"
     wait_for_authserver "${START_TIME}"
-    launch_game "${CONFIG_FILE}" "${SKIP_GAME}"
-    wait_for_game_exit "${CONFIG_FILE}" "${SKIP_GAME}"
+    launch_game "${SKIP_GAME}"
+    wait_for_game_exit "${SKIP_GAME}"
     wait_for_keypress
 
     local TIMESTAMP
@@ -139,7 +136,7 @@ run_full_session() {
     local DB_BACKUP_FILE CFG_BACKUP_FILE
     DB_BACKUP_FILE="$(backup_databases "${DB_ROOT_PASSWORD}" "${BACKUP_DIR}" "${CONFIG_NAME}" "${TIMESTAMP}")"
     CFG_BACKUP_FILE="$(backup_configs "${BACKUP_DIR}" "${CONFIG_NAME}" "${TIMESTAMP}")"
-    cleanup_backups "${BACKUP_DIR}" "${CONFIG_NAME}" "${CONFIG_FILE}"
+    cleanup_backups "${BACKUP_DIR}" "${CONFIG_NAME}"
     print_backup_summary "${BACKUP_DIR}" "${DB_BACKUP_FILE}" "${CFG_BACKUP_FILE}"
     stop_database_container
     stop_stack

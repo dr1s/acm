@@ -254,10 +254,7 @@ command_setup() {
         esac
     done
 
-    local CONFIG_FILE
-    CONFIG_FILE="$(find_config_arg "${@}")"
-
-    init_command_environment "${CONFIG_FILE}"
+    init_command_environment "$@"
 
     if [ "${SKIP_UPDATE}" = false ]; then
         update_main_repo

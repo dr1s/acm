@@ -35,10 +35,7 @@ command_run() {
         esac
     done
 
-    local CONFIG_FILE
-    CONFIG_FILE="$(find_config_arg "${@}")"
-
-    init_command_environment "${CONFIG_FILE}"
+    init_command_environment "$@"
 
     local BACKUP_DIR
     BACKUP_DIR="$(resolve_backup_dir)"
@@ -46,5 +43,5 @@ command_run() {
     local DB_ROOT_PASSWORD
     DB_ROOT_PASSWORD="$(get_db_password)"
 
-    run_full_session "${CONFIG_FILE}" "${BACKUP_DIR}" "${DB_ROOT_PASSWORD}" "${CONFIG_NAME}" "${SKIP_GAME}" "${UP_ARGS[@]}"
+    run_full_session "${BACKUP_DIR}" "${DB_ROOT_PASSWORD}" "${CONFIG_NAME}" "${SKIP_GAME}" "${UP_ARGS[@]}"
 }

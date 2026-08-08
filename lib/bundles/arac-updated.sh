@@ -22,10 +22,7 @@ EOF
 
 bundle_arac_updated_install() {
 
-    local CONFIG_FILE
-    CONFIG_FILE="$(find_config_arg "${@}")"
-
-    init_command_environment "${CONFIG_FILE}"
+    init_command_environment "$@"
 
     log_info "Installing arac-updated bundle..."
     if [ ! -d "${SCRIPT_DIR}/setup-cache/mod-arac-updated" ]; then
@@ -53,10 +50,7 @@ bundle_arac_updated_install() {
 
 bundle_arac_updated_uninstall() {
     log_info "Uninstalling arac-updated bundle..."
-    local CONFIG_FILE
-    CONFIG_FILE="$(find_config_arg "${@}")"
-
-    init_command_environment "${CONFIG_FILE}"
+    init_command_environment "$@"
 
     log_info "Removing arac-updated dbc files"
     rm -v "${SERVER_DIR}/data/dbc/CharBaseInfo.dbc"

@@ -26,10 +26,7 @@ command_console() {
         esac
     done
 
-    local CONFIG_FILE
-    CONFIG_FILE="$(find_config_arg "${@}")"
-
-    init_command_environment "${CONFIG_FILE}"
+    init_command_environment "$@"
 
     if [ -z "$(container_ps_q ac-worldserver)" ]; then
         log_error "ac-worldserver is not running. Start the server first with: ./acm start"

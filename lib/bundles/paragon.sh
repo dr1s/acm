@@ -221,10 +221,7 @@ bundle_paragon_install() {
         exit 1
     fi
 
-    local CONFIG_FILE
-    CONFIG_FILE="$(find_config_arg "${@}")"
-
-    init_command_environment "${CONFIG_FILE}"
+    init_command_environment "$@"
 
     local DB_ROOT_PASSWORD
     DB_ROOT_PASSWORD="$(get_db_password)"
@@ -282,10 +279,7 @@ bundle_paragon_uninstall() {
         exit 1
     fi
 
-    local CONFIG_FILE
-    CONFIG_FILE="$(find_config_arg "${@}")"
-
-    init_command_environment "${CONFIG_FILE}"
+    init_command_environment "$@"
 
     local DB_ROOT_PASSWORD
     DB_ROOT_PASSWORD="$(get_db_password)"

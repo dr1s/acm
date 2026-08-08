@@ -37,10 +37,7 @@ command_backup() {
         esac
     done
 
-    local CONFIG_FILE
-    CONFIG_FILE="$(find_config_arg "${@}")"
-
-    init_command_environment "${CONFIG_FILE}"
+    init_command_environment "$@"
 
     local BACKUP_DIR
     BACKUP_DIR="$(resolve_backup_dir)"
@@ -58,7 +55,7 @@ command_backup() {
     local DB_BACKUP_FILE CFG_BACKUP_FILE
     DB_BACKUP_FILE="$(backup_databases "${DB_ROOT_PASSWORD}" "${BACKUP_DIR}" "${CONFIG_NAME}" "${TIMESTAMP}")"
     CFG_BACKUP_FILE="$(backup_configs "${BACKUP_DIR}" "${CONFIG_NAME}" "${TIMESTAMP}")"
-    cleanup_backups "${BACKUP_DIR}" "${CONFIG_NAME}" "${CONFIG_FILE}"
+    cleanup_backups "${BACKUP_DIR}" "${CONFIG_NAME}"
 
     log_info "Database backup: $(basename "${DB_BACKUP_FILE}")"
     log_info "Config backup:   $(basename "${CFG_BACKUP_FILE}")"

@@ -87,10 +87,7 @@ command_restore() {
         esac
     done
 
-    local CONFIG_FILE
-    CONFIG_FILE="$(find_config_arg "${@}")"
-
-    init_command_environment "${CONFIG_FILE}"
+    init_command_environment "$@"
     resolve_backup_path
 
     if [ ! -f "${BACKUP_FILE}" ]; then

@@ -86,7 +86,6 @@ backup_configs() {
 cleanup_backups() {
     local BACKUP_DIR="${1}"
     local CONFIG_NAME="${2}"
-    local CONFIG_FILE="${3}"
 
     log_info "Cleaning up old backups..."
 
