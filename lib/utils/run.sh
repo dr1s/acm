@@ -139,7 +139,7 @@ run_full_session() {
     local DB_BACKUP_FILE CFG_BACKUP_FILE
     DB_BACKUP_FILE="$(backup_databases "${DB_ROOT_PASSWORD}" "${BACKUP_DIR}" "${CONFIG_NAME}" "${TIMESTAMP}")"
     CFG_BACKUP_FILE="$(backup_configs "${BACKUP_DIR}" "${CONFIG_NAME}" "${TIMESTAMP}")"
-    cleanup_backups "${BACKUP_DIR}" "${CONFIG_NAME}"
+    cleanup_backups "${BACKUP_DIR}" "${CONFIG_NAME}" "${CONFIG_FILE}"
     print_backup_summary "${BACKUP_DIR}" "${DB_BACKUP_FILE}" "${CFG_BACKUP_FILE}"
     stop_database_container
     stop_stack

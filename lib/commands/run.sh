@@ -16,6 +16,8 @@ keypress, backup databases/configs, and shut down.
 Options:
   --skip-game     Skip launching the game
   -h, --help      Show this help message
+
+Backup retention can be configured in the config file. See README.md for details.
 EOF
 }
 

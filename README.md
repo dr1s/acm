@@ -148,6 +148,26 @@ For example, if today is August 10th and you have multiple backups per day, the 
 
 **Important:** only backups matching the naming pattern `db_backup_<CONFIG_NAME>_*.sql.gz` and `config_backup_<CONFIG_NAME>_*.tar.gz` in the configured backup directory are evaluated. Backups with non-matching names or in other directories are ignored and never deleted.
 
+### Configuring retention
+
+You can customize the retention policy or disable cleanup entirely by adding any of the following settings to your config file:
+
+```bash
+# Keep every backup forever (disables the retention policy)
+KEEP_ALL_BACKUPS=true
+
+# Number of days' worth of daily backups to retain, including today (default: 7)
+BACKUP_RETAIN_DAILY=7
+
+# Number of weekly backups to retain (default: 4)
+BACKUP_RETAIN_WEEKLY=4
+
+# Number of monthly backups to retain (default: 12)
+BACKUP_RETAIN_MONTHLY=12
+```
+
+Set `KEEP_ALL_BACKUPS=true` to keep every backup. When it is enabled, the `BACKUP_RETAIN_*` values are ignored.
+
 ### Changing the backup location
 
 The default backup directory is `./backups` (relative to the project root). You can change it by setting the `BACKUP_DIR` environment variable or by adding it to your config file / shell environment:

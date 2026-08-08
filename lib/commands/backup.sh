@@ -19,6 +19,8 @@ to leave them running.
 Options:
   --skip-stop     Do not stop worldserver/authserver before backing up
   -h, --help      Show this help message
+
+Backup retention can be configured in the config file. See README.md for details.
 EOF
 }
 
@@ -56,7 +58,7 @@ command_backup() {
     local DB_BACKUP_FILE CFG_BACKUP_FILE
     DB_BACKUP_FILE="$(backup_databases "${DB_ROOT_PASSWORD}" "${BACKUP_DIR}" "${CONFIG_NAME}" "${TIMESTAMP}")"
     CFG_BACKUP_FILE="$(backup_configs "${BACKUP_DIR}" "${CONFIG_NAME}" "${TIMESTAMP}")"
-    cleanup_backups "${BACKUP_DIR}" "${CONFIG_NAME}"
+    cleanup_backups "${BACKUP_DIR}" "${CONFIG_NAME}" "${CONFIG_FILE}"
 
     log_info "Database backup: $(basename "${DB_BACKUP_FILE}")"
     log_info "Config backup:   $(basename "${CFG_BACKUP_FILE}")"

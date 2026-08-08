@@ -4,6 +4,7 @@
 #
 
 source "${SCRIPT_DIR}/lib/utils/container.sh"
+source "${SCRIPT_DIR}/lib/utils/config.sh"
 
 resolve_backup_dir() {
     local BACKUP_DIR="${BACKUP_DIR:-${SCRIPT_DIR}/backups}"
@@ -85,12 +86,26 @@ backup_configs() {
 cleanup_backups() {
     local BACKUP_DIR="${1}"
     local CONFIG_NAME="${2}"
+    local CONFIG_FILE="${3}"
 
     log_info "Cleaning up old backups..."
 
-    local KEEP_DAILY=7
-    local KEEP_WEEKLY=4
-    local KEEP_MONTHLY=12
+    local KEEP_ALL_BACKUPS
+    KEEP_ALL_BACKUPS="$(read_config_value KEEP_ALL_BACKUPS "${CONFIG_FILE}")"
+    KEEP_ALL_BACKUPS="${KEEP_ALL_BACKUPS:-false}"
+    if [ "${KEEP_ALL_BACKUPS}" = true ]; then
+        log_info "KEEP_ALL_BACKUPS is enabled; skipping cleanup."
+        return 0
+    fi
+
+    local KEEP_DAILY KEEP_WEEKLY KEEP_MONTHLY
+    KEEP_DAILY="$(read_config_value BACKUP_RETAIN_DAILY "${CONFIG_FILE}")"
+    KEEP_DAILY="${KEEP_DAILY:-7}"
+    KEEP_WEEKLY="$(read_config_value BACKUP_RETAIN_WEEKLY "${CONFIG_FILE}")"
+    KEEP_WEEKLY="${KEEP_WEEKLY:-4}"
+    KEEP_MONTHLY="$(read_config_value BACKUP_RETAIN_MONTHLY "${CONFIG_FILE}")"
+    KEEP_MONTHLY="${KEEP_MONTHLY:-12}"
+
     local TODAY
     TODAY=$(date +%Y%m%d)
 
@@ -105,7 +120,7 @@ cleanup_backups() {
     done
 
     local i DATE LATEST_DB LATEST_CFG
-    for i in $(seq 1 $((KEEP_DAILY - 1))); do
+    for i in $(seq 1 "$((KEEP_DAILY - 1))"); do
         DATE=$(date -d "${TODAY} - ${i} days" +%Y%m%d 2>/dev/null || date -v-"${i}"d +%Y%m%d 2>/dev/null)
         LATEST_DB=$(find "${BACKUP_DIR}" -maxdepth 1 -type f -name "db_backup_${CONFIG_NAME}_${DATE}_*.sql.gz" 2>/dev/null | sort -r | head -1 || true)
         [ -n "$LATEST_DB" ] && KEEP_FILES["$LATEST_DB"]=1
@@ -113,15 +128,15 @@ cleanup_backups() {
         [ -n "$LATEST_CFG" ] && KEEP_FILES["$LATEST_CFG"]=1
     done
 
-    for i in $(seq 1 $KEEP_WEEKLY); do
+    for i in $(seq 1 "${KEEP_WEEKLY}"); do
         DATE=$(date -d "${TODAY} - $((i * 7)) days" +%Y%m%d 2>/dev/null || date -v-"$((i * 7))"d +%Y%m%d 2>/dev/null)
-        LATEST_DB=$(find "${BACKUP_DIR}" -maxdepth 1 -type f -name "db_backup_${CONFIG_NAME}_${DATE:0:8}_*.sql.gz" 2>/dev/null | sort -r | head -1 || true)
+        LATEST_DB=$(find "${BACKUP_DIR}" -maxdepth 1 -type f -name "db_backup_${CONFIG_NAME}_${DATE}_*.sql.gz" 2>/dev/null | sort -r | head -1 || true)
         [ -n "$LATEST_DB" ] && KEEP_FILES["$LATEST_DB"]=1
-        LATEST_CFG=$(find "${BACKUP_DIR}" -maxdepth 1 -type f -name "config_backup_${CONFIG_NAME}_${DATE:0:8}_*.tar.gz" 2>/dev/null | sort -r | head -1 || true)
+        LATEST_CFG=$(find "${BACKUP_DIR}" -maxdepth 1 -type f -name "config_backup_${CONFIG_NAME}_${DATE}_*.tar.gz" 2>/dev/null | sort -r | head -1 || true)
         [ -n "$LATEST_CFG" ] && KEEP_FILES["$LATEST_CFG"]=1
     done
 
-    for i in $(seq 1 $KEEP_MONTHLY); do
+    for i in $(seq 1 "${KEEP_MONTHLY}"); do
         DATE=$(date -d "${TODAY} - ${i} months" +%Y%m 2>/dev/null || date -v-"${i}"m +%Y%m 2>/dev/null)
         LATEST_DB=$(find "${BACKUP_DIR}" -maxdepth 1 -type f -name "db_backup_${CONFIG_NAME}_${DATE}??_*.sql.gz" 2>/dev/null | sort -r | head -1 || true)
         [ -n "$LATEST_DB" ] && KEEP_FILES["$LATEST_DB"]=1
