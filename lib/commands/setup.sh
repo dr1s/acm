@@ -109,25 +109,26 @@ remove_stale_modules() {
     local dir
     for dir in "${MODULES_DIR}"/*/; do
         [ -d "${dir}" ] || continue
-        if [ -d "${dir}.git" ]; then
-            local DIR_NAME
-            DIR_NAME="$(basename "${dir}")"
-            local FOUND=false
-            local expected
-            for expected in "${EXPECTED_MODULES[@]}"; do
-                if [ "${DIR_NAME}" = "${expected}" ]; then
-                    FOUND=true
-                    break
-                fi
-            done
-            if [ "${FOUND}" = false ]; then
-                if [ -f "${dir}.stale-keep" ]; then
-                    log_warn "Stale module '${DIR_NAME}' has .stale-keep file, skipping removal."
-                else
-                    log_info "Removing stale module '${DIR_NAME}'..."
-                    rm -rf "${dir}"
-                fi
+
+        local DIR_NAME
+        DIR_NAME="$(basename "${dir}")"
+        local FOUND=false
+        local expected
+        for expected in "${EXPECTED_MODULES[@]}"; do
+            if [ "${DIR_NAME}" = "${expected}" ]; then
+                FOUND=true
+                break
             fi
+        done
+        if [ "${FOUND}" = true ]; then
+            continue
+        fi
+
+        if [ -f "${dir}.stale-keep" ]; then
+            log_warn "Stale module '${DIR_NAME}' has .stale-keep file, skipping removal."
+        else
+            log_info "Removing stale module '${DIR_NAME}'..."
+            rm -rf "${dir}"
         fi
     done
 }
