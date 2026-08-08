@@ -68,11 +68,9 @@ backup_configs() {
     local BACKUP_DIR="${1}"
     local CONFIG_NAME="${2}"
     local TIMESTAMP="${3}"
-    local WORK_DIR="${4}"
 
     mkdir -p "${BACKUP_DIR}"
     local CONFIG_BACKUP="${BACKUP_DIR}/config_backup_${CONFIG_NAME}_${TIMESTAMP}.tar.gz"
-    local SERVER_DIR="${SCRIPT_DIR}/${WORK_DIR}"
 
     log_info "Backing up config files to ${CONFIG_BACKUP}..."
     tar -czf "${CONFIG_BACKUP}" -C "${SERVER_DIR}" env/dist/etc/ lua_scripts/

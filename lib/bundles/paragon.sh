@@ -19,7 +19,6 @@ paragon_drop_existing_databases() {
 }
 
 paragon_remove_lua_scripts() {
-    local SERVER_DIR="${SCRIPT_DIR}/${WORK_DIR}"
     local LUA_SCRIPTS_DIR="${SERVER_DIR}/lua_scripts"
     local TARGET="${LUA_SCRIPTS_DIR}/paragon"
 
@@ -136,7 +135,6 @@ apply_sql_files() {
 }
 
 sync_lua_scripts() {
-    local SERVER_DIR="${SCRIPT_DIR}/${WORK_DIR}"
     local LUA_SCRIPTS_DIR="${SERVER_DIR}/lua_scripts"
     local SRC_DIR="${PARAGON_DIR}/serverside/paragon"
 
@@ -153,7 +151,6 @@ sync_lua_scripts() {
 
 update_lua_config() {
     local DB_NAME="${1}"
-    local SERVER_DIR="${SCRIPT_DIR}/${WORK_DIR}"
     local LUA_SCRIPTS_DIR="${SERVER_DIR}/lua_scripts"
     local CONSTANT_FILE="${LUA_SCRIPTS_DIR}/paragon/paragon_constant.lua"
 

@@ -30,9 +30,11 @@ init_environment() {
     export DOCKER_IMAGE_TAG
     export COMPOSE_PROJECT
     WORK_DIR="server/${CONFIG_NAME}"
+    SERVER_DIR="${SCRIPT_DIR}/${WORK_DIR}"
+    export SERVER_DIR
 
-    mkdir -p "${SCRIPT_DIR}/${WORK_DIR}"
-    cd "${SCRIPT_DIR}/${WORK_DIR}"
+    mkdir -p "${SERVER_DIR}"
+    cd "${SERVER_DIR}"
 }
 
 # init_command_environment CONFIG_FILE

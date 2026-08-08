@@ -33,8 +33,6 @@ bundle_arac_updated_install() {
         git_clone_or_pull "https://github.com/ChromWolf/mod-arac-updated.git" "${SCRIPT_DIR}/setup-cache"
     fi
 
-    local SERVER_DIR="${SCRIPT_DIR}/${WORK_DIR}"
-
     if [ ! -d "${SERVER_DIR}/data/dbc" ]; then
         log_info "Creating dbc directory..."
         mkdir -p "${SERVER_DIR}/data/dbc"
@@ -59,7 +57,6 @@ bundle_arac_updated_uninstall() {
     CONFIG_FILE="$(find_config_arg "${SCRIPT_DIR}" "${@}")"
 
     init_command_environment "${CONFIG_FILE}"
-    local SERVER_DIR="${SCRIPT_DIR}/${WORK_DIR}"
 
     log_info "Removing arac-updated dbc files"
     rm -v "${SERVER_DIR}/data/dbc/CharBaseInfo.dbc"

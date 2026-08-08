@@ -117,9 +117,8 @@ run_full_session() {
     local BACKUP_DIR="${2}"
     local DB_ROOT_PASSWORD="${3}"
     local CONFIG_NAME="${4}"
-    local WORK_DIR="${5}"
-    local SKIP_GAME="${6}"
-    shift 6
+    local SKIP_GAME="${5}"
+    shift 5
     local UP_ARGS=("$@")
 
     local START_TIME
@@ -139,7 +138,7 @@ run_full_session() {
 
     local DB_BACKUP_FILE CFG_BACKUP_FILE
     DB_BACKUP_FILE="$(backup_databases "${DB_ROOT_PASSWORD}" "${BACKUP_DIR}" "${CONFIG_NAME}" "${TIMESTAMP}")"
-    CFG_BACKUP_FILE="$(backup_configs "${BACKUP_DIR}" "${CONFIG_NAME}" "${TIMESTAMP}" "${WORK_DIR}")"
+    CFG_BACKUP_FILE="$(backup_configs "${BACKUP_DIR}" "${CONFIG_NAME}" "${TIMESTAMP}")"
     cleanup_backups "${BACKUP_DIR}" "${CONFIG_NAME}"
     print_backup_summary "${BACKUP_DIR}" "${DB_BACKUP_FILE}" "${CFG_BACKUP_FILE}"
     stop_database_container

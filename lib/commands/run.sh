@@ -44,5 +44,5 @@ command_run() {
     local DB_ROOT_PASSWORD
     DB_ROOT_PASSWORD="$(get_db_password)"
 
-    run_full_session "${CONFIG_FILE}" "${BACKUP_DIR}" "${DB_ROOT_PASSWORD}" "${CONFIG_NAME}" "${WORK_DIR}" "${SKIP_GAME}" "${UP_ARGS[@]}"
+    run_full_session "${CONFIG_FILE}" "${BACKUP_DIR}" "${DB_ROOT_PASSWORD}" "${CONFIG_NAME}" "${SKIP_GAME}" "${UP_ARGS[@]}"
 }

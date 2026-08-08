@@ -55,7 +55,7 @@ command_backup() {
 
     local DB_BACKUP_FILE CFG_BACKUP_FILE
     DB_BACKUP_FILE="$(backup_databases "${DB_ROOT_PASSWORD}" "${BACKUP_DIR}" "${CONFIG_NAME}" "${TIMESTAMP}")"
-    CFG_BACKUP_FILE="$(backup_configs "${BACKUP_DIR}" "${CONFIG_NAME}" "${TIMESTAMP}" "${WORK_DIR}")"
+    CFG_BACKUP_FILE="$(backup_configs "${BACKUP_DIR}" "${CONFIG_NAME}" "${TIMESTAMP}")"
     cleanup_backups "${BACKUP_DIR}" "${CONFIG_NAME}"
 
     log_info "Database backup: $(basename "${DB_BACKUP_FILE}")"
