@@ -28,9 +28,9 @@ bundle_arac_updated_install() {
     init_command_environment "${CONFIG_FILE}"
 
     log_info "Installing arac-updated bundle..."
-    if [ ! -d ${SCRIPT_DIR}/setup-cache/mod-arac-updated ]; then
+    if [ ! -d "${SCRIPT_DIR}/setup-cache/mod-arac-updated" ]; then
         log_info "Cloning arac-updated repository..."
-        git_clone_or_pull "https://github.com/ChromWolf/mod-arac-updated.git" "${SCRIPT_DIR}/setup-cache"
+        git_clone_or_pull "https://github.com/ChromWolf/mod-arac-updated.git" "${SCRIPT_DIR}/setup-cache/mod-arac-updated"
     fi
 
     if [ ! -d "${SERVER_DIR}/data/dbc" ]; then
