@@ -25,7 +25,7 @@ command_stop() {
     done
 
     local CONFIG_FILE
-    CONFIG_FILE="$(find_config_arg "${SCRIPT_DIR}" "${@}")"
+    CONFIG_FILE="$(find_config_arg "${@}")"
 
     init_command_environment "${CONFIG_FILE}"
 

@@ -1,6 +1,7 @@
 #!/bin/bash
 PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 SCRIPT_DIR="${PROJECT_DIR}"
+export SCRIPT_DIR
 
 source "${PROJECT_DIR}/lib/utils/logging.sh"
 source "${PROJECT_DIR}/lib/utils/run.sh"

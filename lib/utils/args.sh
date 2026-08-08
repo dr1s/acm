@@ -17,16 +17,14 @@ has_flag() {
     return 1
 }
 
-# find_config_arg SCRIPT_DIR [args...]
+# find_config_arg [args...]
 # Echoes the resolved config file path, defaulting to SCRIPT_DIR/conf/wowserver.conf.
 find_config_arg() {
-    local SCRIPT_DIR="${1}"
-    shift
     local CONFIG_FILE="${SCRIPT_DIR}/conf/wowserver.conf"
     local arg
     for arg in "${@}"; do
         case "${arg}" in
-            *.conf) CONFIG_FILE="$(resolve_config_path "${arg}" "${SCRIPT_DIR}")" ;;
+            *.conf) CONFIG_FILE="$(resolve_config_path "${arg}")" ;;
         esac
     done
     echo "${CONFIG_FILE}"

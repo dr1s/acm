@@ -1,6 +1,7 @@
 #!/bin/bash
 ORIGINAL_BACKUP_DIR="${BACKUP_DIR:-}"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+export SCRIPT_DIR
 
 source "$(dirname "${BASH_SOURCE[0]}")/../../lib/utils/logging.sh"
 source "$(dirname "${BASH_SOURCE[0]}")/../../lib/utils/backup.sh"

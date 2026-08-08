@@ -1,4 +1,6 @@
 #!/bin/bash
+SCRIPT_DIR="/project"
+export SCRIPT_DIR
 source "$(dirname "${BASH_SOURCE[0]}")/../../lib/utils/config.sh"
 source "$(dirname "${BASH_SOURCE[0]}")/assert.sh"
 
@@ -32,8 +34,8 @@ assert_eq "has trailing spaces" "$(read_config_value TRAILING_SPACES "${TMP}")" 
 MULTI_VALUES=$(read_config_values MULTI "${TMP}")
 assert_eq "first second third" "$(echo "${MULTI_VALUES}" | tr '\n' ' ' | sed 's/ $//')" "read_config_values returns multiple values"
 
-assert_eq "/project/conf/wowserver.conf" "$(resolve_config_path "conf/wowserver.conf" "/project")" "resolve_config_path relative"
-assert_eq "/abs/path.conf" "$(resolve_config_path "/abs/path.conf" "/project")" "resolve_config_path absolute"
+assert_eq "/project/conf/wowserver.conf" "$(resolve_config_path "conf/wowserver.conf")" "resolve_config_path relative"
+assert_eq "/abs/path.conf" "$(resolve_config_path "/abs/path.conf")" "resolve_config_path absolute"
 
 rm -f "${TMP}"
 echo "PASS: config_test"

@@ -2,6 +2,7 @@
 ORIGINAL_PASSWORD="${DOCKER_DB_ROOT_PASSWORD:-}"
 # shellcheck disable=SC2034
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+export SCRIPT_DIR
 
 source "$(dirname "${BASH_SOURCE[0]}")/../../lib/utils/logging.sh"
 source "$(dirname "${BASH_SOURCE[0]}")/../../lib/utils/database.sh"

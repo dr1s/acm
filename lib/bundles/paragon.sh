@@ -222,7 +222,7 @@ bundle_paragon_install() {
     fi
 
     local CONFIG_FILE
-    CONFIG_FILE="$(find_config_arg "${SCRIPT_DIR}" "${@}")"
+    CONFIG_FILE="$(find_config_arg "${@}")"
 
     init_command_environment "${CONFIG_FILE}"
 
@@ -283,7 +283,7 @@ bundle_paragon_uninstall() {
     fi
 
     local CONFIG_FILE
-    CONFIG_FILE="$(find_config_arg "${SCRIPT_DIR}" "${@}")"
+    CONFIG_FILE="$(find_config_arg "${@}")"
 
     init_command_environment "${CONFIG_FILE}"
 

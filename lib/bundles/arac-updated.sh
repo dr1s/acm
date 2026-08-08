@@ -23,7 +23,7 @@ EOF
 bundle_arac_updated_install() {
 
     local CONFIG_FILE
-    CONFIG_FILE="$(find_config_arg "${SCRIPT_DIR}" "${@}")"
+    CONFIG_FILE="$(find_config_arg "${@}")"
 
     init_command_environment "${CONFIG_FILE}"
 
@@ -54,7 +54,7 @@ bundle_arac_updated_install() {
 bundle_arac_updated_uninstall() {
     log_info "Uninstalling arac-updated bundle..."
     local CONFIG_FILE
-    CONFIG_FILE="$(find_config_arg "${SCRIPT_DIR}" "${@}")"
+    CONFIG_FILE="$(find_config_arg "${@}")"
 
     init_command_environment "${CONFIG_FILE}"
 

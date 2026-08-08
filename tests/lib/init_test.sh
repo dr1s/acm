@@ -1,6 +1,7 @@
 #!/bin/bash
 PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 SCRIPT_DIR="${PROJECT_DIR}"
+export SCRIPT_DIR
 
 source "${PROJECT_DIR}/lib/utils/logging.sh"
 source "${PROJECT_DIR}/lib/utils/config.sh"
@@ -13,6 +14,7 @@ trap 'cd "${ORIGINAL_DIR}" && rm -rf "${TMP_DIR}"' EXIT
 
 cd "${TMP_DIR}"
 SCRIPT_DIR="${TMP_DIR}"
+export SCRIPT_DIR
 
 # Default init_environment (no config file)
 unset CONFIG_NAME DOCKER_IMAGE_TAG COMPOSE_PROJECT

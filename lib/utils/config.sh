@@ -17,7 +17,6 @@ read_config_values() {
 
 resolve_config_path() {
     local CONFIG_FILE="${1}"
-    local SCRIPT_DIR="${2}"
     case "${CONFIG_FILE}" in
         /*) echo "${CONFIG_FILE}" ;;
         *) echo "${SCRIPT_DIR}/${CONFIG_FILE}" ;;
