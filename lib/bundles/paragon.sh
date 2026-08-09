@@ -199,10 +199,16 @@ bundle_paragon_install() {
     local DATABASE_NAME="acore_ale"
     local DATABASE_NAME_PROVIDED=false
 
+    local skip_next=false
     local arg
     for arg in "${@}"; do
+        if [ "${skip_next}" = true ]; then
+            skip_next=false
+            continue
+        fi
         case "${arg}" in
             --skip-git) SKIP_GIT=true ;;
+            --database) skip_next=true ;;
             -h|--help) show_paragon_install_help; exit 0 ;;
             *.conf) ;;
             *) log_error "Unknown argument: ${arg}"; show_paragon_install_help; exit 1 ;;
@@ -210,8 +216,8 @@ bundle_paragon_install() {
     done
 
     local PARAGON_DB
-    PARAGON_DB="$(get_arg_value --database "${@}")"
-    local GET_VALUE_STATUS=$?
+    local GET_VALUE_STATUS=0
+    PARAGON_DB="$(get_arg_value --database "${@}")" || GET_VALUE_STATUS=$?
     if [ ${GET_VALUE_STATUS} -eq 0 ]; then
         DATABASE_NAME="${PARAGON_DB}"
         DATABASE_NAME_PROVIDED=true
@@ -259,9 +265,15 @@ bundle_paragon_install() {
 bundle_paragon_uninstall() {
     local DATABASE_NAME="acore_ale"
 
+    local skip_next=false
     local arg
     for arg in "${@}"; do
+        if [ "${skip_next}" = true ]; then
+            skip_next=false
+            continue
+        fi
         case "${arg}" in
+            --database) skip_next=true ;;
             -h|--help) show_paragon_uninstall_help; exit 0 ;;
             *.conf) ;;
             *) log_error "Unknown argument: ${arg}"; show_paragon_uninstall_help; exit 1 ;;
@@ -269,8 +281,8 @@ bundle_paragon_uninstall() {
     done
 
     local PARAGON_DB
-    PARAGON_DB="$(get_arg_value --database "${@}")"
-    local GET_VALUE_STATUS=$?
+    local GET_VALUE_STATUS=0
+    PARAGON_DB="$(get_arg_value --database "${@}")" || GET_VALUE_STATUS=$?
     if [ ${GET_VALUE_STATUS} -eq 0 ]; then
         DATABASE_NAME="${PARAGON_DB}"
     elif [ ${GET_VALUE_STATUS} -eq 2 ]; then
