@@ -7,7 +7,7 @@ source "${SCRIPT_DIR}/lib/utils/container.sh"
 source "${SCRIPT_DIR}/lib/utils/config.sh"
 
 resolve_backup_dir() {
-    local BACKUP_DIR="${BACKUP_DIR:-${SCRIPT_DIR}/backups}"
+    local BACKUP_DIR="${BACKUP_DIR:-./backups}"
     case "${BACKUP_DIR}" in
         /*) ;;
         *) BACKUP_DIR="${SCRIPT_DIR}/${BACKUP_DIR}" ;;

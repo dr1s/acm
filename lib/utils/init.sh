@@ -22,15 +22,22 @@ init_environment() {
             CONFIG_NAME="${NAME}"
             DOCKER_IMAGE_TAG="${NAME}"
         fi
+
+        CONTAINER_CMD="$(read_config_value CONTAINER_CMD "${CONFIG_FILE}")"
+        BACKUP_DIR="$(read_config_value BACKUP_DIR "${CONFIG_FILE}")"
     fi
 
     CONFIG_NAME="${CONFIG_NAME:-server}"
     DOCKER_IMAGE_TAG="${DOCKER_IMAGE_TAG:-master}"
     COMPOSE_PROJECT="${COMPOSE_PROJECT:-${CONFIG_NAME}}"
+    CONTAINER_CMD="${CONTAINER_CMD:-podman}"
+    BACKUP_DIR="${BACKUP_DIR:-./backups}"
     export CONFIG_FILE
     export CONFIG_NAME
     export DOCKER_IMAGE_TAG
     export COMPOSE_PROJECT
+    export CONTAINER_CMD
+    export BACKUP_DIR
     WORK_DIR="server/${CONFIG_NAME}"
     SERVER_DIR="${SCRIPT_DIR}/${WORK_DIR}"
     export SERVER_DIR

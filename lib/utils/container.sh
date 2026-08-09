@@ -4,7 +4,6 @@
 #
 
 CONTAINER_CMD="${CONTAINER_CMD:-podman}"
-export CONTAINER_CMD
 
 container_compose() {
     "${CONTAINER_CMD}" compose -p "${COMPOSE_PROJECT}" "$@"

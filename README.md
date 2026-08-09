@@ -22,7 +22,6 @@ This project provides a single `acm` command that manages the full lifecycle of 
   - [Module URL syntax](#module-url-syntax)
   - [How `acm setup` handles modules](#how-acm-setup-handles-modules)
   - [Example setup with modules](#example-setup-with-modules)
-- [Environment Variables](#environment-variables)
 - [Examples](#examples)
 - [Shell Completion](#shell-completion)
 - [Development & Testing](#development--testing)
@@ -41,7 +40,7 @@ This project provides a single `acm` command that manages the full lifecycle of 
 
 ## Requirements
 
-- [Podman](https://podman.io/) and `podman-compose` (or Docker with Compose v2, via `CONTAINER_CMD`)
+- [Podman](https://podman.io/) and `podman-compose` (or Docker with Compose v2, via the `CONTAINER_CMD` config setting)
 - Bash 4.2+
 - `expect` (for `acm create-account`)
 - `git`, `tar`, `gzip`, `mysqldump`/`mysql` client utilities (run inside containers, but the host needs the wrapper scripts)
@@ -119,7 +118,7 @@ Two files are created on every backup:
 
 - The database backup uses `mysqldump --all-databases --single-transaction --routines --events --triggers` and compresses with `gzip -9`.
 - The config backup archives the server config files and any custom Lua scripts.
-- Backups are **scoped by `CONFIG_NAME`**. Multiple server configs sharing the same `BACKUP_DIR` will not delete each other's files.
+- Backups are **scoped by `CONFIG_NAME`**. Multiple server configs sharing the same backup directory will not delete each other's files.
 
 ### Backup commands
 
@@ -170,10 +169,10 @@ Set `KEEP_ALL_BACKUPS=true` to keep every backup. When it is enabled, the `BACKU
 
 ### Changing the backup location
 
-The default backup directory is `./backups` (relative to the project root). You can change it by setting the `BACKUP_DIR` environment variable or by adding it to your config file / shell environment:
+The default backup directory is `./backups` (relative to the project root). You can change it by setting `BACKUP_DIR` in your config file:
 
 ```bash
-BACKUP_DIR=/mnt/backups/wow ./acm backup
+BACKUP_DIR=/mnt/backups/wow
 ```
 
 Relative paths are resolved relative to the project root.
@@ -253,19 +252,6 @@ MODULE_REPO=https://github.com/dr1s/lua-paragon-anniversary.git@main#serverside/
 # Add MODULE_REPO lines to conf/wowserver.conf, then:
 ./acm setup
 ```
-
-## Environment Variables
-
-| Variable | Default | Description |
-|---|---|---|
-| `BACKUP_DIR` | `./backups` | Where backup files are stored. |
-| `DOCKER_DB_ROOT_PASSWORD` | `password` | MySQL root password for dump/restore. |
-| `DOCKER_VOL_DB` | `ac-database` | Name of the database volume. |
-| `DOCKER_IMAGE_TAG` | `master` | Container image tag (set from `NAME` in config). |
-| `CONFIG_NAME` | `server` | Project name prefix for backups and compose project (set from `NAME` in config). |
-| `COMPOSE_PROJECT` | `CONFIG_NAME` | Compose project name for isolation. |
-| `CONTAINER_CMD` | `podman` | The container command to use (set to `docker` if needed). |
-| `LAUNCH_GAME` | _(empty)_ | Command to launch 5s after worldserver is healthy. |
 
 ## Examples
 
