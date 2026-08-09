@@ -3,8 +3,6 @@
 # acm bundle command.
 #
 
-source "${SCRIPT_DIR}/lib/bundles/paragon.sh"
-
 show_bundle_help() {
     cat <<'EOF'
 Usage: ./acm bundle <bundle-name> <subcommand> [options]
