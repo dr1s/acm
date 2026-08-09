@@ -35,5 +35,5 @@ command_console() {
 
     echo "Attaching to ac-worldserver console..."
     echo "Press Ctrl+P then Ctrl+Q to detach (do NOT press Ctrl+C)."
-    exec ${CONTAINER_CMD} attach --detach-keys="ctrl-p,ctrl-q" ac-worldserver
+    exec "${CONTAINER_CMD}" attach --detach-keys="ctrl-p,ctrl-q" ac-worldserver
 }

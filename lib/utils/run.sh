@@ -21,7 +21,7 @@ wait_for_authserver() {
 
     while true; do
         local HEALTH
-        HEALTH=$(${CONTAINER_CMD} inspect --format "{{.State.Health.Status}}" "ac-authserver" 2>/dev/null || true)
+        HEALTH=$("${CONTAINER_CMD}" inspect --format "{{.State.Health.Status}}" "ac-authserver" 2>/dev/null || true)
         if [ "${HEALTH}" = "healthy" ]; then
             local ELAPSED=$(( $(date +%s) - START_TIME ))
             log_info "Authserver is up and running after ${ELAPSED}s."

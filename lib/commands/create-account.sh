@@ -31,7 +31,7 @@ run_expect_create_account() {
 
     expect <<EOF
 set timeout 30
-spawn ${CONTAINER_CMD} attach --detach-keys="ctrl-p,ctrl-q" ac-worldserver
+spawn "${CONTAINER_CMD}" attach --detach-keys="ctrl-p,ctrl-q" ac-worldserver
 expect "AC>"
 send "account create ${USERNAME} ${PASSWORD}\r"
 expect "AC>"

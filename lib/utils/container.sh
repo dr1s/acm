@@ -34,12 +34,12 @@ container_rm() {
 
 container_volume_inspect() {
     local VOLUME="${1}"
-    ${CONTAINER_CMD} volume inspect "${VOLUME}"
+    "${CONTAINER_CMD}" volume inspect "${VOLUME}"
 }
 
 container_volume_rm() {
     local VOLUME="${1}"
-    ${CONTAINER_CMD} volume rm "${VOLUME}"
+    "${CONTAINER_CMD}" volume rm "${VOLUME}"
 }
 
 container_ps_q() {
@@ -59,7 +59,7 @@ wait_for_container_stopped() {
 
     while true; do
         local STATE
-        STATE=$(${CONTAINER_CMD} inspect --format '{{.State.Status}}' "${CONTAINER}" 2>/dev/null || echo "none")
+        STATE=$("${CONTAINER_CMD}" inspect --format '{{.State.Status}}' "${CONTAINER}" 2>/dev/null || echo "none")
         if [ "${STATE}" = "none" ] || [ "${STATE}" = "exited" ] || [ "${STATE}" = "dead" ]; then
             return 0
         fi
@@ -67,7 +67,7 @@ wait_for_container_stopped() {
         local ELAPSED=$(( $(date +%s) - WAIT_START ))
         if [ "${ELAPSED}" -ge "${TIMEOUT}" ]; then
             log_warn "Container '${CONTAINER}' still in state '${STATE}' after ${ELAPSED}s, force removing"
-            ${CONTAINER_CMD} container rm -f "${CONTAINER}" 2>/dev/null || true
+            "${CONTAINER_CMD}" container rm -f "${CONTAINER}" 2>/dev/null || true
             return 1
         fi
 
@@ -78,7 +78,7 @@ wait_for_container_stopped() {
 ensure_compose_containers_stopped() {
     local PROJECT="${1:-${COMPOSE_PROJECT}}"
     local CONTAINERS
-    CONTAINERS=$(${CONTAINER_CMD} ps -a --filter label="com.docker.compose.project=${PROJECT}" --format '{{.Names}}' 2>/dev/null || true)
+    CONTAINERS=$("${CONTAINER_CMD}" ps -a --filter label="com.docker.compose.project=${PROJECT}" --format '{{.Names}}' 2>/dev/null || true)
 
     if [ -z "${CONTAINERS}" ]; then
         return
@@ -93,7 +93,7 @@ ensure_compose_containers_stopped() {
     done <<< "${CONTAINERS}"
 
     log_info "Stopping containers: ${ALL_CONTAINERS[*]}"
-    ${CONTAINER_CMD} stop "${ALL_CONTAINERS[@]}" 2>/dev/null || true
+    "${CONTAINER_CMD}" stop "${ALL_CONTAINERS[@]}" 2>/dev/null || true
 
     local CONTAINER
     for CONTAINER in "${ALL_CONTAINERS[@]}"; do

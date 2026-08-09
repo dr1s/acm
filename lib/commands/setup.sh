@@ -182,7 +182,7 @@ remove_old_images() {
     container_compose config --images | \
     while IFS= read -r image; do
         if echo "${image}" | grep -qv 'mysql'; then
-            ${CONTAINER_CMD} rmi "${image}" 2>/dev/null || true
+            "${CONTAINER_CMD}" rmi "${image}" 2>/dev/null || true
         fi
     done
 }
@@ -198,14 +198,14 @@ build_images() {
 
 prune_images() {
     log_info "Pruning dangling images..."
-    ${CONTAINER_CMD} image prune -f
+    "${CONTAINER_CMD}" image prune -f
     log_info "Pruning external images..."
-    ${CONTAINER_CMD} image prune --external -f
+    "${CONTAINER_CMD}" image prune --external -f
 }
 
 prune_build_cache() {
     log_info "Pruning build cache..."
-    ${CONTAINER_CMD} builder prune -f
+    "${CONTAINER_CMD}" builder prune -f
 }
 
 ensure_module_configs() {
