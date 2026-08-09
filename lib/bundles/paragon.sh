@@ -195,39 +195,16 @@ verify_installation() {
 }
 
 bundle_paragon_install() {
-    local SKIP_GIT=false
-    local DATABASE_NAME="acore_ale"
+    parse_command_args show_paragon_install_help "--skip-git --database=" "$@"
+    reject_positional_args show_paragon_install_help
+    init_command_environment "${PARSED_CONFIG_FILE}"
+
+    local SKIP_GIT="${PARSED_FLAGS[--skip-git]:-false}"
+    local DATABASE_NAME="${PARSED_FLAGS[--database]:-acore_ale}"
     local DATABASE_NAME_PROVIDED=false
-
-    local skip_next=false
-    local arg
-    for arg in "${@}"; do
-        if [ "${skip_next}" = true ]; then
-            skip_next=false
-            continue
-        fi
-        case "${arg}" in
-            --skip-git) SKIP_GIT=true ;;
-            --database) skip_next=true ;;
-            -h|--help) show_paragon_install_help; exit 0 ;;
-            *.conf) ;;
-            *) log_error "Unknown argument: ${arg}"; show_paragon_install_help; exit 1 ;;
-        esac
-    done
-
-    local PARAGON_DB
-    local GET_VALUE_STATUS=0
-    PARAGON_DB="$(get_arg_value --database "${@}")" || GET_VALUE_STATUS=$?
-    if [ ${GET_VALUE_STATUS} -eq 0 ]; then
-        DATABASE_NAME="${PARAGON_DB}"
+    if [ -n "${PARSED_FLAGS[--database]+x}" ]; then
         DATABASE_NAME_PROVIDED=true
-    elif [ ${GET_VALUE_STATUS} -eq 2 ]; then
-        log_error "--database requires a value"
-        show_paragon_install_help
-        exit 1
     fi
-
-    init_command_environment "$@"
 
     local DB_ROOT_PASSWORD
     DB_ROOT_PASSWORD="$(get_db_password)"
@@ -263,35 +240,11 @@ bundle_paragon_install() {
 }
 
 bundle_paragon_uninstall() {
-    local DATABASE_NAME="acore_ale"
+    parse_command_args show_paragon_uninstall_help "--database=" "$@"
+    reject_positional_args show_paragon_uninstall_help
+    init_command_environment "${PARSED_CONFIG_FILE}"
 
-    local skip_next=false
-    local arg
-    for arg in "${@}"; do
-        if [ "${skip_next}" = true ]; then
-            skip_next=false
-            continue
-        fi
-        case "${arg}" in
-            --database) skip_next=true ;;
-            -h|--help) show_paragon_uninstall_help; exit 0 ;;
-            *.conf) ;;
-            *) log_error "Unknown argument: ${arg}"; show_paragon_uninstall_help; exit 1 ;;
-        esac
-    done
-
-    local PARAGON_DB
-    local GET_VALUE_STATUS=0
-    PARAGON_DB="$(get_arg_value --database "${@}")" || GET_VALUE_STATUS=$?
-    if [ ${GET_VALUE_STATUS} -eq 0 ]; then
-        DATABASE_NAME="${PARAGON_DB}"
-    elif [ ${GET_VALUE_STATUS} -eq 2 ]; then
-        log_error "--database requires a value"
-        show_paragon_uninstall_help
-        exit 1
-    fi
-
-    init_command_environment "$@"
+    local DATABASE_NAME="${PARSED_FLAGS[--database]:-acore_ale}"
 
     local DB_ROOT_PASSWORD
     DB_ROOT_PASSWORD="$(get_db_password)"

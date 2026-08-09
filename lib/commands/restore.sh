@@ -76,18 +76,16 @@ stop_database() {
 }
 
 command_restore() {
-    local BACKUP_ARG=""
+    parse_command_args show_restore_help "" "$@"
+    init_command_environment "${PARSED_CONFIG_FILE}"
 
-    local arg
-    for arg in "${@}"; do
-        case "${arg}" in
-            -h|--help) show_restore_help; exit 0 ;;
-            *.conf) ;;
-            *) BACKUP_ARG="${arg}" ;;
-        esac
-    done
+    if [ ${#PARSED_POSITIONAL_ARGS[@]} -eq 0 ]; then
+        log_error "Usage: ./acm restore [config-file] <backup-file.sql.gz>"
+        show_restore_help
+        exit 1
+    fi
 
-    init_command_environment "$@"
+    BACKUP_ARG="${PARSED_POSITIONAL_ARGS[0]}"
     resolve_backup_path
 
     if [ ! -f "${BACKUP_FILE}" ]; then

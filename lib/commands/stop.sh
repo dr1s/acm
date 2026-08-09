@@ -15,16 +15,9 @@ EOF
 }
 
 command_stop() {
-    local arg
-    for arg in "${@}"; do
-        case "${arg}" in
-            -h|--help) show_stop_help; exit 0 ;;
-            *.conf) ;;
-            *) log_error "Unknown argument: ${arg}"; show_stop_help; exit 1 ;;
-        esac
-    done
-
-    init_command_environment "$@"
+    parse_command_args show_stop_help "" "$@"
+    reject_positional_args show_stop_help
+    init_command_environment "${PARSED_CONFIG_FILE}"
 
     log_info "Stopping compose stack..."
     container_down

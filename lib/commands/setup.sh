@@ -232,29 +232,16 @@ ensure_module_configs() {
 }
 
 command_setup() {
-    local CLEAN=false
-    local NO_CACHE=false
-    local SKIP_UPDATE=false
-    local SKIP_STALE=false
-    local SKIP_BUILD=false
-    local PRUNE=false
+    parse_command_args show_setup_help "--clean --no-cache --skip-update --skip-updates --skip-stale --skip-build --prune" "$@"
+    reject_positional_args show_setup_help
+    init_command_environment "${PARSED_CONFIG_FILE}"
 
-    local arg
-    for arg in "${@}"; do
-        case "${arg}" in
-            --clean) CLEAN=true ;;
-            --no-cache) NO_CACHE=true ;;
-            --skip-update|--skip-updates) SKIP_UPDATE=true ;;
-            --skip-stale) SKIP_STALE=true ;;
-            --skip-build) SKIP_BUILD=true ;;
-            --prune) PRUNE=true ;;
-            -h|--help) show_setup_help; exit 0 ;;
-            *.conf) ;;
-            *) log_error "Unknown argument: ${arg}"; show_setup_help; exit 1 ;;
-        esac
-    done
-
-    init_command_environment "$@"
+    local CLEAN="${PARSED_FLAGS[--clean]:-false}"
+    local NO_CACHE="${PARSED_FLAGS[--no-cache]:-false}"
+    local SKIP_UPDATE="${PARSED_FLAGS[--skip-update]:-${PARSED_FLAGS[--skip-updates]:-false}}"
+    local SKIP_STALE="${PARSED_FLAGS[--skip-stale]:-false}"
+    local SKIP_BUILD="${PARSED_FLAGS[--skip-build]:-false}"
+    local PRUNE="${PARSED_FLAGS[--prune]:-false}"
 
     if [ "${SKIP_UPDATE}" = false ]; then
         update_main_repo

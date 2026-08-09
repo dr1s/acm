@@ -10,7 +10,7 @@ source "${SCRIPT_DIR}/lib/utils/init.sh"
 
 
 show_arac_updated_help() {
-    cat <<EOF
+    cat <<'EOF'
 Usage: ./acm bundle arac-updated [COMMAND]
 
 Commands:
@@ -21,8 +21,9 @@ EOF
 }
 
 bundle_arac_updated_install() {
-
-    init_command_environment "$@"
+    parse_command_args show_arac_updated_help "" "$@"
+    reject_positional_args show_arac_updated_help
+    init_command_environment "${PARSED_CONFIG_FILE}"
 
     log_info "Installing arac-updated bundle..."
     if [ ! -d "${SCRIPT_DIR}/setup-cache/mod-arac-updated" ]; then
@@ -45,13 +46,14 @@ bundle_arac_updated_install() {
     log_info "arac-updated bundle installed"
     log_info "Ensure the client patch is installed on your client and the module is enabled"
     log_info "Patch: https://github.com/ChromWolf/mod-arac-updated/raw/refs/heads/master/Patch-A.MPQ"
-
 }
 
 bundle_arac_updated_uninstall() {
-    log_info "Uninstalling arac-updated bundle..."
-    init_command_environment "$@"
+    parse_command_args show_arac_updated_help "" "$@"
+    reject_positional_args show_arac_updated_help
+    init_command_environment "${PARSED_CONFIG_FILE}"
 
+    log_info "Uninstalling arac-updated bundle..."
     log_info "Removing arac-updated dbc files"
     rm -v "${SERVER_DIR}/data/dbc/CharBaseInfo.dbc"
     rm -v "${SERVER_DIR}/data/dbc/CharStartOutfit.dbc"

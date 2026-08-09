@@ -22,26 +22,17 @@ EOF
 }
 
 command_run() {
-    SKIP_GAME=false
-    local UP_ARGS=()
-
-    local arg
-    for arg in "${@}"; do
-        case "${arg}" in
-            --skip-game) SKIP_GAME=true ;;
-            -h|--help) show_run_help; exit 0 ;;
-            *.conf) ;;
-            *) UP_ARGS+=("${arg}") ;;
-        esac
-    done
-
-    init_command_environment "$@"
+    parse_command_args show_run_help "--skip-game" "$@"
+    init_command_environment "${PARSED_CONFIG_FILE}"
 
     local BACKUP_DIR
     BACKUP_DIR="$(resolve_backup_dir)"
 
     local DB_ROOT_PASSWORD
     DB_ROOT_PASSWORD="$(get_db_password)"
+
+    local SKIP_GAME="${PARSED_FLAGS[--skip-game]:-false}"
+    local UP_ARGS=("${PARSED_POSITIONAL_ARGS[@]}")
 
     run_full_session "${BACKUP_DIR}" "${DB_ROOT_PASSWORD}" "${CONFIG_NAME}" "${SKIP_GAME}" "${UP_ARGS[@]}"
 }

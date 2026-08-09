@@ -44,35 +44,23 @@ EOF
 }
 
 command_create_account() {
-    local USERNAME=""
-    local PASSWORD=""
+    parse_command_args show_create_account_help "" "$@"
+    init_command_environment "${PARSED_CONFIG_FILE}"
 
-    local arg
-    for arg in "${@}"; do
-        case "${arg}" in
-            -h|--help) show_create_account_help; exit 0 ;;
-            *.conf) ;;
-            *)
-                if [ -z "${USERNAME}" ]; then
-                    USERNAME="${arg}"
-                elif [ -z "${PASSWORD}" ]; then
-                    PASSWORD="${arg}"
-                else
-                    log_error "Unknown argument: ${arg}"
-                    show_create_account_help
-                    exit 1
-                fi
-                ;;
-        esac
-    done
-
-    if [ -z "${USERNAME}" ] || [ -z "${PASSWORD}" ]; then
+    if [ ${#PARSED_POSITIONAL_ARGS[@]} -lt 2 ]; then
         log_error "Username and password are required."
         show_create_account_help
         exit 1
     fi
 
-    init_command_environment "$@"
+    if [ ${#PARSED_POSITIONAL_ARGS[@]} -gt 2 ]; then
+        log_error "Unknown argument: ${PARSED_POSITIONAL_ARGS[2]}"
+        show_create_account_help
+        exit 1
+    fi
+
+    local USERNAME="${PARSED_POSITIONAL_ARGS[0]}"
+    local PASSWORD="${PARSED_POSITIONAL_ARGS[1]}"
 
     if [ -z "$(container_ps_q ac-worldserver)" ]; then
         log_error "ac-worldserver is not running. Start the server first with: ./acm start"

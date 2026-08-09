@@ -17,16 +17,9 @@ EOF
 }
 
 command_console() {
-    local arg
-    for arg in "${@}"; do
-        case "${arg}" in
-            -h|--help) show_console_help; exit 0 ;;
-            *.conf) ;;
-            *) log_error "Unknown argument: ${arg}"; show_console_help; exit 1 ;;
-        esac
-    done
-
-    init_command_environment "$@"
+    parse_command_args show_console_help "" "$@"
+    reject_positional_args show_console_help
+    init_command_environment "${PARSED_CONFIG_FILE}"
 
     if [ -z "$(container_ps_q ac-worldserver)" ]; then
         log_error "ac-worldserver is not running. Start the server first with: ./acm start"

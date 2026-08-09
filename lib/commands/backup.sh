@@ -25,19 +25,11 @@ EOF
 }
 
 command_backup() {
-    local SKIP_STOP=false
+    parse_command_args show_backup_help "--skip-stop" "$@"
+    reject_positional_args show_backup_help
+    init_command_environment "${PARSED_CONFIG_FILE}"
 
-    local arg
-    for arg in "${@}"; do
-        case "${arg}" in
-            --skip-stop) SKIP_STOP=true ;;
-            -h|--help) show_backup_help; exit 0 ;;
-            *.conf) ;;
-            *) log_error "Unknown argument: ${arg}"; show_backup_help; exit 1 ;;
-        esac
-    done
-
-    init_command_environment "$@"
+    local SKIP_STOP="${PARSED_FLAGS[--skip-stop]:-false}"
 
     local BACKUP_DIR
     BACKUP_DIR="$(resolve_backup_dir)"

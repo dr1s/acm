@@ -18,19 +18,10 @@ EOF
 }
 
 command_start() {
-    local UP_ARGS=()
+    parse_command_args show_start_help "" "$@"
+    init_command_environment "${PARSED_CONFIG_FILE}"
 
-    local arg
-    for arg in "${@}"; do
-        case "${arg}" in
-            -h|--help) show_start_help; exit 0 ;;
-            *.conf) ;;
-            *) UP_ARGS+=("${arg}") ;;
-        esac
-    done
-
-    init_command_environment "$@"
-
+    local UP_ARGS=("${PARSED_POSITIONAL_ARGS[@]}")
     START_TIME=$(date +%s)
     # shellcheck disable=SC2119
     ensure_compose_containers_stopped
