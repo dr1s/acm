@@ -1,0 +1,70 @@
+
+services:
+  ac-database:
+    volumes:
+      - ${DOCKER_VOL_DB:-ac-database}:/var/lib/mysql
+
+  ac-db-import:
+    image: acore/ac-wotlk-db-import:${DOCKER_IMAGE_TAG}
+    volumes:
+      - ${DOCKER_VOL_ETC:-./env/dist/etc}:/azerothcore/env/dist/etc
+      - ${DOCKER_VOL_LOGS:-./env/dist/logs}:/azerothcore/env/dist/logs
+
+  ac-worldserver:
+    image: acore/ac-wotlk-worldserver:${DOCKER_IMAGE_TAG}
+    # The base docker-compose.yml depends_on block is patched during setup to
+    # remove ac-client-data-init (it never reports service_completed_successfully
+    # even after downloading data). This override only re-affirms the database
+    # dependency; ac-db-import remains in the patched base file.
+    depends_on:
+      ac-database:
+        condition: service_healthy
+    volumes:
+      - ${DOCKER_VOL_ETC:-./env/dist/etc}:/azerothcore/env/dist/etc
+      - ${DOCKER_VOL_LOGS:-./env/dist/logs}:/azerothcore/env/dist/logs
+      - ${DOCKER_VOL_DATA:-ac-client-data}:/azerothcore/env/dist/data/:ro
+      - ./modules:/azerothcore/modules
+      - ./lua_scripts:/azerothcore/lua_scripts
+    cap_add:
+      - SYS_NICE
+    tty: true
+    stdin_open: true
+    healthcheck:
+      test: ["CMD", "bash", "-c", "echo > /dev/tcp/localhost/8085"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 120s
+
+  ac-authserver:
+    image: acore/ac-wotlk-authserver:${DOCKER_IMAGE_TAG}
+    depends_on:
+      ac-worldserver:
+        condition: service_healthy
+    volumes:
+      - ${DOCKER_VOL_ETC:-./env/dist/etc}:/azerothcore/env/dist/etc
+      - ${DOCKER_VOL_LOGS:-./env/dist/logs}:/azerothcore/env/dist/logs
+    cap_add:
+      - SYS_NICE
+    healthcheck:
+      test: ["CMD", "bash", "-c", "echo > /dev/tcp/localhost/3724"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+  ac-client-data-init:
+    image: acore/ac-wotlk-client-data:${DOCKER_IMAGE_TAG}
+    volumes:
+      - ./env/dist/etc:/azerothcore/env/dist/etc/
+
+  ac-tools:
+    image: acore/ac-wotlk-tools:${DOCKER_IMAGE_TAG}
+    volumes:
+      - ${DOCKER_AC_CLIENT_FOLDER:-./var/client}:/azerothcore/env/dist/bin/Data
+
+  # Retained dev profile configurations from main stack for completeness
+  ac-dev-server:
+    volumes:
+      - ${DOCKER_VOL_ROOT:-.}:/azerothcore
+      - ${DOCKER_AC_CLIENT_FOLDER:-./var/client}:/azerothcore/env/dist/bin/Data

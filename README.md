@@ -1,6 +1,6 @@
 # AzerothCore Container Manager
 
-Container-based AzerothCore WoW server with module support. Uses Podman.
+Container-based AzerothCore WoW server with module support. Uses Podman or Docker.
 
 This project provides a single `acm` command that manages the full lifecycle of an AzerothCore server stack: setup, start/stop, backups, restores, module management, and Paragon Anniversary support.
 
@@ -99,6 +99,8 @@ Edit `conf/wowserver.conf` to set:
 | Setting | Description |
 |---|---|
 | `NAME` | Container image tag and Compose project name (e.g. `playerbots`). |
+| `CONTAINER_CMD` | The container command to use. Default: `podman`; set to `docker` for Docker with Compose v2. |
+| `BACKUP_DIR` | Directory where backups are stored. Default: `./backups` (relative to the project root). |
 | `MAIN_REPO` | Base AzerothCore fork to clone. Append `@branch` for a specific branch. |
 | `MODULE_REPO` | One module Git URL per line. Use `@branch` for branches and `#path` for subfolders. |
 | `LAUNCH_GAME` | Command to run 5 seconds after the worldserver is healthy (backgrounded, output discarded). |

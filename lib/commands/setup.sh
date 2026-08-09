@@ -134,7 +134,7 @@ remove_stale_modules() {
 }
 
 sync_compose_override() {
-    local OVERRIDE_NAME="podman-compose.override.yml"
+    local OVERRIDE_NAME="${CONTAINER_CMD}-compose.override.yml"
     local OVERRIDE_SRC="${SCRIPT_DIR}/compose/${OVERRIDE_NAME}"
     local OVERRIDE_DST="./docker-compose.override.yml"
 
