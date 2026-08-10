@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 set -euo pipefail
 SCRIPT_DIR="/project"
 export SCRIPT_DIR

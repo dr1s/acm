@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 set -euo pipefail
 ORIGINAL_PASSWORD="${DOCKER_DB_ROOT_PASSWORD:-}"
 # shellcheck disable=SC2034

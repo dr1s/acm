@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Shared runtime helpers for starting and stopping the server stack.
 # Used by the start, run, and stop commands.

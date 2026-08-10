@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 set -euo pipefail
 source "$(dirname "${BASH_SOURCE[0]}")/../../lib/utils/logging.sh"
 source "$(dirname "${BASH_SOURCE[0]}")/../../lib/utils/git.sh"
