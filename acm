@@ -7,7 +7,6 @@
 
 SCRIPT_DIR="$(cd "$(dirname "${0}")" && pwd)"
 export SCRIPT_DIR
-source "${SCRIPT_DIR}/lib/utils/init.sh"
 
 show_usage() {
     cat <<'EOF'
@@ -29,12 +28,20 @@ Run './acm <command> --help' for command-specific options.
 EOF
 }
 
-main() {
-    if [ $# -eq 0 ]; then
-        show_usage
-        exit 1
-    fi
+if [ $# -eq 0 ]; then
+    show_usage
+    exit 1
+fi
 
+if [ -z "${BASH_VERSION:-}" ] || [ "${BASH_VERSINFO[0]:-0}" -lt 4 ]; then
+    echo "acm requires Bash 4.2 or newer." >&2
+    echo "Install a newer bash and run: bash ./acm ..." >&2
+    exit 1
+fi
+
+source "${SCRIPT_DIR}/lib/utils/init.sh"
+
+main() {
     local COMMAND="${1}"
     shift
 
