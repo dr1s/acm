@@ -71,12 +71,12 @@ wait_for_game_exit() {
     fi
 
     log_info "Waiting for game to start..."
-    while ! pgrep -f "Wow.exe" >/dev/null 2>&1; do
+    while ! ps -ef | grep -q "[W]ow.exe"; do
         sleep 2
     done
 
     log_info "Waiting for game to exit..."
-    while pgrep -f "Wow.exe" >/dev/null 2>&1; do
+    while ps -ef | grep -q "[W]ow.exe"; do
         sleep 2
     done
     log_info "Game exited."
