@@ -43,7 +43,10 @@ This project provides a single `acm` command that manages the full lifecycle of 
 - [Podman](https://podman.io/) and `podman-compose` (or Docker with Compose v2, via the `CONTAINER_CMD` config setting)
 - Bash 4.2+
 - `expect` (for `acm create-account`)
-- `git`, `tar`, `gzip`, `mysqldump`/`mysql` client utilities (run inside containers, but the host needs the wrapper scripts)
+- `git`, `tar`, `gzip`
+- `envsubst` (from `gettext`; used by `acm setup` to generate the Compose override)
+- `rsync` (used by `acm setup` and `acm bundle paragon install` to sync module/Lua files)
+- `patch` (used by `acm setup` to remove the client-data-init dependency)
 
 ## Quick Start
 

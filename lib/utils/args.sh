@@ -3,6 +3,12 @@
 # Shared command-line argument helpers.
 #
 
+# resolve_config_path is defined in lib/utils/config.sh. Source it only if it
+# has not already been loaded (e.g. in tests that set a fake SCRIPT_DIR).
+if ! command -v resolve_config_path >/dev/null 2>&1; then
+    source "${SCRIPT_DIR}/lib/utils/config.sh"
+fi
+
 # has_flag FLAG [args...]
 # Returns 0 if FLAG is present in the remaining arguments.
 has_flag() {

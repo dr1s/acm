@@ -22,6 +22,7 @@ source "$(dirname "${BASH_SOURCE[0]}")/../../lib/commands/setup.sh"
 
 # Track which setup phases run
 PHASES=()
+check_setup_dependencies() { :; }
 update_main_repo() { PHASES+=("update_main_repo"); }
 update_modules() { PHASES+=("update_modules"); }
 remove_stale_modules() { PHASES+=("remove_stale_modules"); }
