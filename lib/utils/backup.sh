@@ -74,7 +74,11 @@ backup_configs() {
     local CONFIG_BACKUP="${BACKUP_DIR}/config_backup_${CONFIG_NAME}_${TIMESTAMP}.tar.gz"
 
     log_info "Backing up config files to ${CONFIG_BACKUP}..."
-    tar -czf "${CONFIG_BACKUP}" -C "${SERVER_DIR}" env/dist/etc/ lua_scripts/
+    local TAR_ITEMS=("env/dist/etc/")
+    if [ -d "${SERVER_DIR}/lua_scripts" ]; then
+        TAR_ITEMS+=("lua_scripts/")
+    fi
+    tar -czf "${CONFIG_BACKUP}" -C "${SERVER_DIR}" "${TAR_ITEMS[@]}"
 
     local CONFIG_SIZE
     CONFIG_SIZE=$(du -h "${CONFIG_BACKUP}" | cut -f1)
