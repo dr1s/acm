@@ -5,6 +5,7 @@
 
 source "${SCRIPT_DIR}/lib/utils/args.sh"
 source "${SCRIPT_DIR}/lib/utils/container.sh"
+source "${SCRIPT_DIR}/lib/utils/dependencies.sh"
 
 show_stop_help() {
     cat <<'EOF'
@@ -18,6 +19,8 @@ command_stop() {
     parse_command_args show_stop_help "" "$@"
     reject_positional_args show_stop_help
     init_command_environment "${PARSED_CONFIG_FILE}"
+
+    check_container_runtime
 
     log_info "Stopping compose stack..."
     container_down

@@ -6,6 +6,7 @@
 source "${SCRIPT_DIR}/lib/utils/args.sh"
 source "${SCRIPT_DIR}/lib/utils/git.sh"
 source "${SCRIPT_DIR}/lib/utils/container.sh"
+source "${SCRIPT_DIR}/lib/utils/dependencies.sh"
 
 show_setup_help() {
     cat <<'EOF'
@@ -233,7 +234,7 @@ ensure_module_configs() {
 
 check_setup_dependencies() {
     local cmd
-    for cmd in git envsubst rsync patch expect tar gzip; do
+    for cmd in git envsubst rsync patch tar gzip; do
         if ! command -v "${cmd}" >/dev/null 2>&1; then
             log_error "Required command '${cmd}' is not installed."
             case "${cmd}" in
@@ -241,7 +242,6 @@ check_setup_dependencies() {
                 envsubst) log_error "Install gettext (e.g. sudo pacman -S gettext, sudo apt install gettext)." ;;
                 rsync)    log_error "Install rsync (e.g. sudo pacman -S rsync, sudo apt install rsync)." ;;
                 patch)    log_error "Install patch (e.g. sudo pacman -S patch, sudo apt install patch)." ;;
-                expect)   log_error "Install expect (e.g. sudo pacman -S expect, sudo apt install expect)." ;;
                 tar)      log_error "Install tar (e.g. sudo pacman -S tar, sudo apt install tar)." ;;
                 gzip)     log_error "Install gzip (e.g. sudo pacman -S gzip, sudo apt install gzip)." ;;
             esac
@@ -249,22 +249,7 @@ check_setup_dependencies() {
         fi
     done
 
-    if [ -z "${CONTAINER_CMD:-}" ]; then
-        log_error "CONTAINER_CMD is not set."
-        exit 1
-    fi
-
-    if ! command -v "${CONTAINER_CMD}" >/dev/null 2>&1; then
-        log_error "Container command '${CONTAINER_CMD}' is not installed."
-        log_error "Install ${CONTAINER_CMD} or set CONTAINER_CMD in your config."
-        exit 1
-    fi
-
-    if ! "${CONTAINER_CMD}" compose version >/dev/null 2>&1; then
-        log_error "'${CONTAINER_CMD} compose' is not available."
-        log_error "Install the Compose plugin for ${CONTAINER_CMD}."
-        exit 1
-    fi
+    check_container_runtime
 }
 
 command_setup() {

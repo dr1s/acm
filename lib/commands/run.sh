@@ -5,6 +5,7 @@
 
 source "${SCRIPT_DIR}/lib/utils/args.sh"
 source "${SCRIPT_DIR}/lib/utils/run.sh"
+source "${SCRIPT_DIR}/lib/utils/dependencies.sh"
 
 show_run_help() {
     cat <<'EOF'
@@ -24,6 +25,9 @@ EOF
 command_run() {
     parse_command_args show_run_help "--skip-game" "$@"
     init_command_environment "${PARSED_CONFIG_FILE}"
+
+    check_container_runtime
+    check_host_commands tar gzip
 
     local BACKUP_DIR
     BACKUP_DIR="$(resolve_backup_dir)"

@@ -20,6 +20,10 @@ log_error() { :; }
 
 source "$(dirname "${BASH_SOURCE[0]}")/../../lib/commands/backup.sh"
 
+# Stub dependency checks; we are not testing the runtime here.
+check_container_runtime() { :; }
+check_host_commands() { :; }
+
 # Mock dependencies defined by the command file's libraries
 resolve_backup_dir() { echo "/tmp/backups"; }
 get_db_password() { echo "password"; }

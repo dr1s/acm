@@ -5,6 +5,7 @@
 
 source "${SCRIPT_DIR}/lib/utils/args.sh"
 source "${SCRIPT_DIR}/lib/utils/run.sh"
+source "${SCRIPT_DIR}/lib/utils/dependencies.sh"
 
 show_start_help() {
     cat <<'EOF'
@@ -20,6 +21,8 @@ EOF
 command_start() {
     parse_command_args show_start_help "" "$@"
     init_command_environment "${PARSED_CONFIG_FILE}"
+
+    check_container_runtime
 
     local UP_ARGS=("${PARSED_POSITIONAL_ARGS[@]}")
     local START_TIME

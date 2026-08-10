@@ -19,6 +19,9 @@ log_error() { :; }
 
 source "$(dirname "${BASH_SOURCE[0]}")/../../lib/commands/console.sh"
 
+# Stub dependency checks; we are not testing the runtime here.
+check_container_runtime() { :; }
+
 WORLD_RUNNING="yes"
 container_ps_q() { echo "${WORLD_RUNNING}"; }
 

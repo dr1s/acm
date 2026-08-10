@@ -19,6 +19,10 @@ log_error() { :; }
 
 source "$(dirname "${BASH_SOURCE[0]}")/../../lib/commands/run.sh"
 
+# Stub dependency checks; we are not testing the runtime here.
+check_container_runtime() { :; }
+check_host_commands() { :; }
+
 # Mock run_full_session to capture invocation
 CAPTURED_ARGS=()
 run_full_session() {

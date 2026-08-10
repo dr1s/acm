@@ -7,6 +7,7 @@ source "${SCRIPT_DIR}/lib/utils/args.sh"
 source "${SCRIPT_DIR}/lib/utils/logging.sh"
 source "${SCRIPT_DIR}/lib/utils/git.sh"
 source "${SCRIPT_DIR}/lib/utils/init.sh"
+source "${SCRIPT_DIR}/lib/utils/dependencies.sh"
 
 
 show_arac_updated_help() {
@@ -24,6 +25,8 @@ bundle_arac_updated_install() {
     parse_command_args show_arac_updated_help "" "$@"
     reject_positional_args show_arac_updated_help
     init_command_environment "${PARSED_CONFIG_FILE}"
+
+    check_host_commands git
 
     log_info "Installing arac-updated bundle..."
     if [ ! -d "${SCRIPT_DIR}/setup-cache/mod-arac-updated" ]; then

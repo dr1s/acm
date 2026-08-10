@@ -5,6 +5,7 @@
 
 source "${SCRIPT_DIR}/lib/utils/args.sh"
 source "${SCRIPT_DIR}/lib/utils/run.sh"
+source "${SCRIPT_DIR}/lib/utils/dependencies.sh"
 
 show_backup_help() {
     cat <<'EOF'
@@ -28,6 +29,9 @@ command_backup() {
     parse_command_args show_backup_help "--skip-stop" "$@"
     reject_positional_args show_backup_help
     init_command_environment "${PARSED_CONFIG_FILE}"
+
+    check_container_runtime
+    check_host_commands tar gzip
 
     local SKIP_STOP="${PARSED_FLAGS[--skip-stop]:-false}"
 

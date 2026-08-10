@@ -6,6 +6,7 @@
 source "${SCRIPT_DIR}/lib/utils/args.sh"
 source "${SCRIPT_DIR}/lib/utils/container.sh"
 source "${SCRIPT_DIR}/lib/utils/database.sh"
+source "${SCRIPT_DIR}/lib/utils/dependencies.sh"
 
 show_restore_help() {
     cat <<'EOF'
@@ -78,6 +79,9 @@ stop_database() {
 command_restore() {
     parse_command_args show_restore_help "" "$@"
     init_command_environment "${PARSED_CONFIG_FILE}"
+
+    check_container_runtime
+    check_host_commands zcat mktemp
 
     if [ ${#PARSED_POSITIONAL_ARGS[@]} -eq 0 ]; then
         log_error "Usage: ./acm restore [config-file] <backup-file.sql.gz>"

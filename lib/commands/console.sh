@@ -5,6 +5,7 @@
 
 source "${SCRIPT_DIR}/lib/utils/args.sh"
 source "${SCRIPT_DIR}/lib/utils/container.sh"
+source "${SCRIPT_DIR}/lib/utils/dependencies.sh"
 
 show_console_help() {
     cat <<'EOF'
@@ -20,6 +21,8 @@ command_console() {
     parse_command_args show_console_help "" "$@"
     reject_positional_args show_console_help
     init_command_environment "${PARSED_CONFIG_FILE}"
+
+    check_container_runtime
 
     if [ -z "$(container_ps_q ac-worldserver)" ]; then
         log_error "ac-worldserver is not running. Start the server first with: ./acm start"

@@ -6,6 +6,7 @@
 source "${SCRIPT_DIR}/lib/utils/args.sh"
 source "${SCRIPT_DIR}/lib/utils/container.sh"
 source "${SCRIPT_DIR}/lib/utils/database.sh"
+source "${SCRIPT_DIR}/lib/utils/dependencies.sh"
 
 PARAGON_REPO="https://github.com/dr1s/lua-paragon-anniversary.git"
 PARAGON_DIR="${SCRIPT_DIR}/setup-cache/lua-paragon-anniversary"
@@ -206,6 +207,12 @@ bundle_paragon_install() {
         DATABASE_NAME_PROVIDED=true
     fi
 
+    check_container_runtime
+    if [ "${SKIP_GIT}" = false ]; then
+        check_host_commands git
+    fi
+    check_host_commands rsync sed mktemp
+
     local DB_ROOT_PASSWORD
     DB_ROOT_PASSWORD="$(get_db_password)"
 
@@ -245,6 +252,8 @@ bundle_paragon_uninstall() {
     init_command_environment "${PARSED_CONFIG_FILE}"
 
     local DATABASE_NAME="${PARSED_FLAGS[--database]:-acore_ale}"
+
+    check_container_runtime
 
     local DB_ROOT_PASSWORD
     DB_ROOT_PASSWORD="$(get_db_password)"

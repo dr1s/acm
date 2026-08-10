@@ -10,6 +10,9 @@ source "$(dirname "${BASH_SOURCE[0]}")/assert.sh"
 
 source "$(dirname "${BASH_SOURCE[0]}")/../../lib/bundles/arac-updated.sh"
 
+# Stub dependency checks; we are not testing the runtime here.
+check_host_commands() { :; }
+
 # Mock dependencies defined by the bundle file's libraries
 init_command_environment() {
     CONFIG_FILE="${SCRIPT_DIR}/conf/wowserver.conf"
