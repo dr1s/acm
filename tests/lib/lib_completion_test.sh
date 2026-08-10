@@ -4,8 +4,12 @@ set -euo pipefail
 # Unit tests for completions/acm helper functions.
 #
 
-source "$(dirname "${BASH_SOURCE[0]}")/../../completions/acm"
-source "$(dirname "${BASH_SOURCE[0]}")/assert.sh"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+export SCRIPT_DIR
+source "${SCRIPT_DIR}/completions/acm"
+cd "${SCRIPT_DIR}"
+
+source "${SCRIPT_DIR}/tests/lib/assert.sh"
 
 commands_sample='Usage: acm <command>
 

@@ -3,9 +3,9 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 export SCRIPT_DIR
 
-source "$(dirname "${BASH_SOURCE[0]}")/../../lib/utils/logging.sh"
-source "$(dirname "${BASH_SOURCE[0]}")/../../lib/utils/backup.sh"
-source "$(dirname "${BASH_SOURCE[0]}")/assert.sh"
+source "${SCRIPT_DIR}/lib/utils/logging.sh"
+source "${SCRIPT_DIR}/lib/utils/backup.sh"
+source "${SCRIPT_DIR}/tests/lib/assert.sh"
 
 TMP_CONFIG=$(mktemp)
 trap 'rm -f "${TMP_CONFIG}"' EXIT
@@ -60,7 +60,9 @@ cleanup_backups "${TMP_BACKUP_DIR}" "test"
 
 # Verify custom retention windows are read from config
 YESTERDAY=$(date -d "${TODAY} - 1 day" +%Y%m%d 2>/dev/null || date -v-1d +%Y%m%d 2>/dev/null)
+[ -n "${YESTERDAY}" ] || fail "YESTERDAY date should not be empty"
 touch "${TMP_BACKUP_DIR}/db_backup_test_${YESTERDAY}_120000.sql.gz"
+[ -f "${TMP_BACKUP_DIR}/db_backup_test_${YESTERDAY}_120000.sql.gz" ] || fail "yesterday backup file should exist before cleanup"
 
 cat > "${TMP_CONFIG}" <<'EOF'
 BACKUP_RETAIN_DAILY=1

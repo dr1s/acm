@@ -119,29 +119,35 @@ cleanup_backups() {
     done
 
     local i DATE LATEST_DB LATEST_CFG
-    for i in $(seq 1 "$((KEEP_DAILY - 1))"); do
-        DATE=$(date -d "${TODAY} - ${i} days" +%Y%m%d 2>/dev/null || date -v-"${i}"d +%Y%m%d 2>/dev/null)
-        LATEST_DB=$(find "${BACKUP_DIR}" -maxdepth 1 -type f -name "db_backup_${CONFIG_NAME}_${DATE}_*.sql.gz" 2>/dev/null | sort -r | head -1 || true)
-        [ -n "$LATEST_DB" ] && KEEP_FILES["$LATEST_DB"]=1
-        LATEST_CFG=$(find "${BACKUP_DIR}" -maxdepth 1 -type f -name "config_backup_${CONFIG_NAME}_${DATE}_*.tar.gz" 2>/dev/null | sort -r | head -1 || true)
-        [ -n "$LATEST_CFG" ] && KEEP_FILES["$LATEST_CFG"]=1
-    done
+    if [ "${KEEP_DAILY}" -gt 1 ]; then
+        for i in $(seq 1 "$((KEEP_DAILY - 1))"); do
+            DATE=$(date -d "${TODAY} - ${i} days" +%Y%m%d 2>/dev/null || date -v-"${i}"d +%Y%m%d 2>/dev/null)
+            LATEST_DB=$(find "${BACKUP_DIR}" -maxdepth 1 -type f -name "db_backup_${CONFIG_NAME}_${DATE}_*.sql.gz" 2>/dev/null | sort -r | head -1 || true)
+            [ -n "$LATEST_DB" ] && KEEP_FILES["$LATEST_DB"]=1
+            LATEST_CFG=$(find "${BACKUP_DIR}" -maxdepth 1 -type f -name "config_backup_${CONFIG_NAME}_${DATE}_*.tar.gz" 2>/dev/null | sort -r | head -1 || true)
+            [ -n "$LATEST_CFG" ] && KEEP_FILES["$LATEST_CFG"]=1
+        done
+    fi
 
-    for i in $(seq 1 "${KEEP_WEEKLY}"); do
-        DATE=$(date -d "${TODAY} - $((i * 7)) days" +%Y%m%d 2>/dev/null || date -v-"$((i * 7))"d +%Y%m%d 2>/dev/null)
-        LATEST_DB=$(find "${BACKUP_DIR}" -maxdepth 1 -type f -name "db_backup_${CONFIG_NAME}_${DATE}_*.sql.gz" 2>/dev/null | sort -r | head -1 || true)
-        [ -n "$LATEST_DB" ] && KEEP_FILES["$LATEST_DB"]=1
-        LATEST_CFG=$(find "${BACKUP_DIR}" -maxdepth 1 -type f -name "config_backup_${CONFIG_NAME}_${DATE}_*.tar.gz" 2>/dev/null | sort -r | head -1 || true)
-        [ -n "$LATEST_CFG" ] && KEEP_FILES["$LATEST_CFG"]=1
-    done
+    if [ "${KEEP_WEEKLY}" -gt 0 ]; then
+        for i in $(seq 1 "${KEEP_WEEKLY}"); do
+            DATE=$(date -d "${TODAY} - $((i * 7)) days" +%Y%m%d 2>/dev/null || date -v-"$((i * 7))"d +%Y%m%d 2>/dev/null)
+            LATEST_DB=$(find "${BACKUP_DIR}" -maxdepth 1 -type f -name "db_backup_${CONFIG_NAME}_${DATE}_*.sql.gz" 2>/dev/null | sort -r | head -1 || true)
+            [ -n "$LATEST_DB" ] && KEEP_FILES["$LATEST_DB"]=1
+            LATEST_CFG=$(find "${BACKUP_DIR}" -maxdepth 1 -type f -name "config_backup_${CONFIG_NAME}_${DATE}_*.tar.gz" 2>/dev/null | sort -r | head -1 || true)
+            [ -n "$LATEST_CFG" ] && KEEP_FILES["$LATEST_CFG"]=1
+        done
+    fi
 
-    for i in $(seq 1 "${KEEP_MONTHLY}"); do
-        DATE=$(date -d "${TODAY} - ${i} months" +%Y%m 2>/dev/null || date -v-"${i}"m +%Y%m 2>/dev/null)
-        LATEST_DB=$(find "${BACKUP_DIR}" -maxdepth 1 -type f -name "db_backup_${CONFIG_NAME}_${DATE}??_*.sql.gz" 2>/dev/null | sort -r | head -1 || true)
-        [ -n "$LATEST_DB" ] && KEEP_FILES["$LATEST_DB"]=1
-        LATEST_CFG=$(find "${BACKUP_DIR}" -maxdepth 1 -type f -name "config_backup_${CONFIG_NAME}_${DATE}??_*.tar.gz" 2>/dev/null | sort -r | head -1 || true)
-        [ -n "$LATEST_CFG" ] && KEEP_FILES["$LATEST_CFG"]=1
-    done
+    if [ "${KEEP_MONTHLY}" -gt 0 ]; then
+        for i in $(seq 1 "${KEEP_MONTHLY}"); do
+            DATE=$(date -d "${TODAY} - ${i} months" +%Y%m 2>/dev/null || date -v-"${i}"m +%Y%m 2>/dev/null)
+            LATEST_DB=$(find "${BACKUP_DIR}" -maxdepth 1 -type f -name "db_backup_${CONFIG_NAME}_${DATE}??_*.sql.gz" 2>/dev/null | sort -r | head -1 || true)
+            [ -n "$LATEST_DB" ] && KEEP_FILES["$LATEST_DB"]=1
+            LATEST_CFG=$(find "${BACKUP_DIR}" -maxdepth 1 -type f -name "config_backup_${CONFIG_NAME}_${DATE}??_*.tar.gz" 2>/dev/null | sort -r | head -1 || true)
+            [ -n "$LATEST_CFG" ] && KEEP_FILES["$LATEST_CFG"]=1
+        done
+    fi
 
     local DELETED=0
     for f in "${BACKUP_DIR}/db_backup_${CONFIG_NAME}_"*.sql.gz "${BACKUP_DIR}/config_backup_${CONFIG_NAME}_"*.tar.gz; do
