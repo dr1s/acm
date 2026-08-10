@@ -36,7 +36,7 @@ command_bundle() {
             fi
             # shellcheck disable=SC1090
             source "${BUNDLE_FILE}"
-            local BUNDLE_FUNCTION="bundle_${BUNDLE}"
+            local BUNDLE_FUNCTION="bundle_${BUNDLE//-/_}"
             "${BUNDLE_FUNCTION}" "$@"
             ;;
     esac

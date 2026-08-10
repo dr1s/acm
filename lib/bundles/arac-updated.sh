@@ -37,8 +37,7 @@ bundle_arac_updated_install() {
     fi
 
     log_info "Installing arac-updated dbc files"
-    cp -v "${SCRIPT_DIR}/setup-cache/mod-arac-updated/patch-contents/DBFilesContent/"*.dbc "${SERVER_DIR}/data/dbc"
-    if [ $? -ne 0 ]; then
+    if ! cp -v "${SCRIPT_DIR}/setup-cache/mod-arac-updated/patch-contents/DBFilesContent/"*.dbc "${SERVER_DIR}/data/dbc"; then
         log_error "Failed to install arac-updated dbc files"
         exit 1
     fi
@@ -55,17 +54,18 @@ bundle_arac_updated_uninstall() {
 
     log_info "Uninstalling arac-updated bundle..."
     log_info "Removing arac-updated dbc files"
-    rm -v "${SERVER_DIR}/data/dbc/CharBaseInfo.dbc"
-    rm -v "${SERVER_DIR}/data/dbc/CharStartOutfit.dbc"
-    rm -v "${SERVER_DIR}/data/dbc/SkillLineAbility.dbc"
-    rm -v "${SERVER_DIR}/data/dbc/SkillRaceClassInfo.dbc"
-    rm -v "${SERVER_DIR}/data/dbc/Spell.dbc"
-    rm -v "${SERVER_DIR}/data/dbc/SpellCategory.dbc"
+    rm -f -v \
+        "${SERVER_DIR}/data/dbc/CharBaseInfo.dbc" \
+        "${SERVER_DIR}/data/dbc/CharStartOutfit.dbc" \
+        "${SERVER_DIR}/data/dbc/SkillLineAbility.dbc" \
+        "${SERVER_DIR}/data/dbc/SkillRaceClassInfo.dbc" \
+        "${SERVER_DIR}/data/dbc/Spell.dbc" \
+        "${SERVER_DIR}/data/dbc/SpellCategory.dbc"
 
     log_info "arac-updated bundle uninstalled"
 }
 
-bundle_arac-updated() {
+bundle_arac_updated() {
     if [ $# -eq 0 ]; then
         show_arac_updated_help
         exit 1

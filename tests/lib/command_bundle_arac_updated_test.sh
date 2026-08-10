@@ -32,12 +32,12 @@ DBC_FILES_COPIED=""
 cp() { DBC_FILES_COPIED="yes"; }
 
 # --help exits 0
-if ! (bundle_arac-updated --help) >/dev/null 2>&1; then
+if ! (bundle_arac_updated --help) >/dev/null 2>&1; then
     fail "arac-updated --help should exit 0"
 fi
 
 # Unknown subcommand fails
-if (bundle_arac-updated unknown) >/dev/null 2>&1; then
+if (bundle_arac_updated unknown) >/dev/null 2>&1; then
     fail "arac-updated with unknown subcommand should fail"
 fi
 
@@ -47,7 +47,7 @@ DBC_FILES_COPIED=""
 # Use a fresh SCRIPT_DIR so the cache check does not find a pre-existing clone
 SCRIPT_DIR="${TMP_DIR}"
 export SCRIPT_DIR
-bundle_arac-updated install >/dev/null 2>&1 || fail "arac-updated install should succeed"
+bundle_arac_updated install >/dev/null 2>&1 || fail "arac-updated install should succeed"
 [ "${#GIT_CLONE_ARGS[@]}" -ge 2 ] || fail "arac-updated install should clone repo"
 [ "${DBC_FILES_COPIED}" = "yes" ] || fail "arac-updated install should copy dbc files"
 
@@ -55,7 +55,7 @@ bundle_arac-updated install >/dev/null 2>&1 || fail "arac-updated install should
 # Note: bundle_arac_updated_uninstall uses rm -v, so mock rm
 REMOVED_FILES=()
 rm() { REMOVED_FILES+=("$@"); }
-bundle_arac-updated uninstall >/dev/null 2>&1 || fail "arac-updated uninstall should succeed"
+bundle_arac_updated uninstall >/dev/null 2>&1 || fail "arac-updated uninstall should succeed"
 [ "${#REMOVED_FILES[@]}" -ge 6 ] || fail "arac-updated uninstall should remove dbc files"
 
 echo "PASS: command_arac_updated_test"
