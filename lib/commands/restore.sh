@@ -85,7 +85,8 @@ command_restore() {
         exit 1
     fi
 
-    BACKUP_ARG="${PARSED_POSITIONAL_ARGS[0]}"
+    local BACKUP_ARG="${PARSED_POSITIONAL_ARGS[0]}"
+    local BACKUP_FILE
     resolve_backup_path
 
     if [ ! -f "${BACKUP_FILE}" ]; then

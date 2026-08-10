@@ -22,6 +22,7 @@ command_start() {
     init_command_environment "${PARSED_CONFIG_FILE}"
 
     local UP_ARGS=("${PARSED_POSITIONAL_ARGS[@]}")
+    local START_TIME
     START_TIME=$(date +%s)
     # shellcheck disable=SC2119
     ensure_compose_containers_stopped

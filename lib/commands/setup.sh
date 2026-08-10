@@ -242,6 +242,7 @@ command_setup() {
     local SKIP_STALE="${PARSED_FLAGS[--skip-stale]:-false}"
     local SKIP_BUILD="${PARSED_FLAGS[--skip-build]:-false}"
     local PRUNE="${PARSED_FLAGS[--prune]:-false}"
+    local EXPECTED_MODULES=()
 
     if [ "${SKIP_UPDATE}" = false ]; then
         update_main_repo

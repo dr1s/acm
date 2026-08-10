@@ -55,6 +55,7 @@ command_backup() {
     if [ "${SKIP_STOP}" = false ]; then
         log_info "Starting worldserver and authserver..."
         container_up ac-worldserver ac-authserver
+        local START_TIME
         START_TIME=$(date +%s)
         wait_for_authserver "${START_TIME}"
     fi
