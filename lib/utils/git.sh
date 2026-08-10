@@ -38,18 +38,19 @@ parse_module_repo() {
     fi
 }
 
-# handle_pull_output EXIT_CODE OUTPUT [DIR]
+# handle_pull_output EXIT_CODE OUTPUT DIR CHANGED
 handle_pull_output() {
     local EXIT_CODE="${1}"
     local PULL_OUTPUT="${2}"
-    local DIR="${3:-.}"
+    local DIR="${3}"
+    local CHANGED="${4}"
 
     echo "${PULL_OUTPUT}"
     if [ "${EXIT_CODE}" -ne 0 ]; then
         log_error "Failed to update repository in '${DIR}'."
         exit 1
     fi
-    if ! echo "${PULL_OUTPUT}" | grep -q "Already up to date"; then
+    if [ "${CHANGED}" = "changed" ]; then
         echo ""
         git -C "${DIR}" --no-pager log --oneline -5
         echo ""
@@ -64,9 +65,14 @@ git_clone_or_pull() {
 
     if [ -d "${DIR}/.git" ]; then
         log_info "Updating $(basename "${DIR}")..."
+        local BEFORE_REV AFTER_REV
+        BEFORE_REV=$(git -C "${DIR}" rev-parse HEAD 2>/dev/null || true)
         local PULL_OUTPUT EXIT_CODE=0
         PULL_OUTPUT="$(git -C "${DIR}" pull 2>&1)" || EXIT_CODE=$?
-        handle_pull_output "${EXIT_CODE}" "${PULL_OUTPUT}" "${DIR}"
+        AFTER_REV=$(git -C "${DIR}" rev-parse HEAD 2>/dev/null || true)
+        local CHANGED=""
+        [ "${BEFORE_REV}" != "${AFTER_REV}" ] && CHANGED="changed"
+        handle_pull_output "${EXIT_CODE}" "${PULL_OUTPUT}" "${DIR}" "${CHANGED}"
     else
         log_info "Cloning $(basename "${DIR}")..."
         if [ -n "${BRANCH}" ]; then
