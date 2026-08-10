@@ -22,6 +22,7 @@ source "$(dirname "${BASH_SOURCE[0]}")/../../lib/commands/restore.sh"
 # Mock the restore pipeline
 BACKUP_RESOLVED=""
 RESOLVE_CALLED=""
+# shellcheck disable=SC2034
 resolve_backup_path() { RESOLVE_CALLED="yes"; BACKUP_RESOLVED="${BACKUP_ARG}"; BACKUP_FILE="${BACKUP_ARG}"; }
 
 STOP_AND_REMOVE_DB=""

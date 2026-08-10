@@ -25,9 +25,11 @@ CLONE_CALLED=""
 clone_paragon_repo() { CLONE_CALLED="yes"; }
 
 DB_STARTED=""
+# shellcheck disable=SC2034
 ensure_database_running() { DB_STARTED="yes"; }
 
 DB_WAITED=""
+# shellcheck disable=SC2034
 wait_for_container_database() { DB_WAITED="yes"; }
 
 DROPPED_DB=""

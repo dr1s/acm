@@ -119,6 +119,7 @@ parse_command_args() {
                             exit 1
                             ;;
                     esac
+                    # shellcheck disable=SC2034
                     PARSED_FLAGS["${arg}"]="${next_arg}"
                     i="${next_idx}"
                 else

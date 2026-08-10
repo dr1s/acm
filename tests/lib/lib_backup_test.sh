@@ -28,6 +28,7 @@ assert_eq "${SCRIPT_DIR}/./backups" "$(resolve_backup_dir)" "resolve_backup_dir 
 cat > "${TMP_CONFIG}" <<'EOF'
 BACKUP_DIR=/mnt/backups
 EOF
+# shellcheck disable=SC2034
 BACKUP_DIR="$(read_config_value BACKUP_DIR "${TMP_CONFIG}")"
 assert_eq "/mnt/backups" "$(resolve_backup_dir)" "resolve_backup_dir absolute"
 
