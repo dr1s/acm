@@ -233,22 +233,7 @@ ensure_module_configs() {
 }
 
 check_setup_dependencies() {
-    local cmd
-    for cmd in git envsubst rsync patch tar gzip; do
-        if ! command -v "${cmd}" >/dev/null 2>&1; then
-            log_error "Required command '${cmd}' is not installed."
-            case "${cmd}" in
-                git)      log_error "Install git (e.g. sudo pacman -S git, sudo apt install git)." ;;
-                envsubst) log_error "Install gettext (e.g. sudo pacman -S gettext, sudo apt install gettext)." ;;
-                rsync)    log_error "Install rsync (e.g. sudo pacman -S rsync, sudo apt install rsync)." ;;
-                patch)    log_error "Install patch (e.g. sudo pacman -S patch, sudo apt install patch)." ;;
-                tar)      log_error "Install tar (e.g. sudo pacman -S tar, sudo apt install tar)." ;;
-                gzip)     log_error "Install gzip (e.g. sudo pacman -S gzip, sudo apt install gzip)." ;;
-            esac
-            exit 1
-        fi
-    done
-
+    check_host_commands git envsubst rsync patch tar gzip
     check_container_runtime
 }
 

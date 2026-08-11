@@ -5,6 +5,25 @@
 
 source "${SCRIPT_DIR}/lib/utils/logging.sh"
 
+# __dependency_hint CMD
+# Returns a package-manager hint for the given command.
+__dependency_hint() {
+    local cmd="${1}"
+    case "${cmd}" in
+        git)      echo "Install git (e.g. sudo pacman -S git, sudo apt install git)." ;;
+        envsubst) echo "Install gettext (e.g. sudo pacman -S gettext, sudo apt install gettext)." ;;
+        rsync)    echo "Install rsync (e.g. sudo pacman -S rsync, sudo apt install rsync)." ;;
+        patch)    echo "Install patch (e.g. sudo pacman -S patch, sudo apt install patch)." ;;
+        tar)      echo "Install tar (e.g. sudo pacman -S tar, sudo apt install tar)." ;;
+        gzip)     echo "Install gzip (e.g. sudo pacman -S gzip, sudo apt install gzip)." ;;
+        expect)   echo "Install expect (e.g. sudo pacman -S expect, sudo apt install expect)." ;;
+        zcat)     echo "Install gzip (e.g. sudo pacman -S gzip, sudo apt install gzip)." ;;
+        mktemp)   echo "Install coreutils (e.g. sudo pacman -S coreutils, sudo apt install coreutils)." ;;
+        sed)      echo "Install sed (e.g. sudo pacman -S sed, sudo apt install sed)." ;;
+        *)        echo "Install ${cmd} with your package manager." ;;
+    esac
+}
+
 # check_container_runtime
 # Verifies that CONTAINER_CMD is set, installed, and has compose support.
 check_container_runtime() {
@@ -33,6 +52,7 @@ check_host_commands() {
     for cmd in "$@"; do
         if ! command -v "${cmd}" >/dev/null 2>&1; then
             log_error "Required command '${cmd}' is not installed."
+            log_error "$(__dependency_hint "${cmd}")"
             exit 1
         fi
     done

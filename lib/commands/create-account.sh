@@ -5,6 +5,7 @@
 
 source "${SCRIPT_DIR}/lib/utils/args.sh"
 source "${SCRIPT_DIR}/lib/utils/container.sh"
+source "${SCRIPT_DIR}/lib/utils/dependencies.sh"
 
 show_create_account_help() {
     cat <<'EOF'
@@ -15,14 +16,7 @@ EOF
 }
 
 check_expect_installed() {
-    if ! command -v expect >/dev/null 2>&1; then
-        log_error "This command requires 'expect' but it is not installed."
-        log_error "Install it with your package manager, e.g.:"
-        log_error "  sudo pacman -S expect        # Arch"
-        log_error "  sudo apt install expect        # Debian / Ubuntu"
-        log_error "  sudo dnf install expect        # Fedora"
-        return 1
-    fi
+    check_host_commands expect
 }
 
 run_expect_create_account() {
