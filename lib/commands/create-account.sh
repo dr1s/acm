@@ -22,10 +22,11 @@ check_expect_installed() {
 run_expect_create_account() {
     local USERNAME="${1}"
     local PASSWORD="${2}"
+    local CONTAINER_ID="${3}"
 
     expect <<EOF
 set timeout 30
-spawn "${CONTAINER_CMD}" attach --detach-keys="ctrl-p,ctrl-q" ac-worldserver
+spawn ${CONTAINER_CMD} attach --detach-keys="ctrl-p,ctrl-q" ${CONTAINER_ID}
 expect "AC>"
 send "account create ${USERNAME} ${PASSWORD}\r"
 expect "AC>"
@@ -56,7 +57,9 @@ command_create_account() {
     local USERNAME="${PARSED_POSITIONAL_ARGS[0]}"
     local PASSWORD="${PARSED_POSITIONAL_ARGS[1]}"
 
-    if [ -z "$(container_ps_q ac-worldserver)" ]; then
+    local CONTAINER_ID
+    CONTAINER_ID=$(container_ps_q ac-worldserver)
+    if [ -z "${CONTAINER_ID}" ]; then
         log_error "ac-worldserver is not running. Start the server first with: ./acm start"
         exit 1
     fi
@@ -66,7 +69,7 @@ command_create_account() {
     fi
 
     log_info "Creating account '${USERNAME}' with GM level 3..."
-    if run_expect_create_account "${USERNAME}" "${PASSWORD}"; then
+    if run_expect_create_account "${USERNAME}" "${PASSWORD}" "${CONTAINER_ID}"; then
         log_info "Account '${USERNAME}' created successfully."
     else
         log_error "Failed to create account '${USERNAME}'."

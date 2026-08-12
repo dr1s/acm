@@ -24,12 +24,14 @@ command_console() {
 
     check_container_runtime
 
-    if [ -z "$(container_ps_q ac-worldserver)" ]; then
+    local CONTAINER_ID
+    CONTAINER_ID=$(container_ps_q ac-worldserver)
+    if [ -z "${CONTAINER_ID}" ]; then
         log_error "ac-worldserver is not running. Start the server first with: ./acm start"
         exit 1
     fi
 
     echo "Attaching to ac-worldserver console..."
     echo "Press Ctrl+P then Ctrl+Q to detach (do NOT press Ctrl+C)."
-    exec "${CONTAINER_CMD}" attach --detach-keys="ctrl-p,ctrl-q" ac-worldserver
+    exec "${CONTAINER_CMD}" attach --detach-keys="ctrl-p,ctrl-q" "${CONTAINER_ID}"
 }

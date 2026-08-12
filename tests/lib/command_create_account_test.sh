@@ -23,11 +23,16 @@ source "$(dirname "${BASH_SOURCE[0]}")/../../lib/commands/create-account.sh"
 EXPECT_CHECKED=""
 check_expect_installed() { EXPECT_CHECKED="yes"; return 0; }
 
+WORLD_CONTAINER_ID="test-worldserver-id"
 WORLD_RUNNING="yes"
-container_ps_q() { echo "${WORLD_RUNNING}"; }
+container_ps_q() {
+    if [ "${WORLD_RUNNING}" = "yes" ]; then
+        echo "${WORLD_CONTAINER_ID}"
+    fi
+}
 
 ACCOUNT_CREATED=""
-run_expect_create_account() { ACCOUNT_CREATED="${1}:${2}"; return 0; }
+run_expect_create_account() { ACCOUNT_CREATED="${1}:${2}:${3}"; return 0; }
 
 # --help exits 0
 if ! (command_create_account --help) >/dev/null 2>&1; then
@@ -53,7 +58,7 @@ EXPECT_CHECKED=""
 ACCOUNT_CREATED=""
 command_create_account myuser mypass
 [ "${EXPECT_CHECKED}" = "yes" ] || fail "create-account should check for expect"
-[ "${ACCOUNT_CREATED}" = "myuser:mypass" ] || fail "create-account should run expect with username and password"
+[ "${ACCOUNT_CREATED}" = "myuser:mypass:${WORLD_CONTAINER_ID}" ] || fail "create-account should run expect with username, password, and resolved container ID"
 
 # Fails if worldserver is not running
 WORLD_RUNNING=""
