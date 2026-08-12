@@ -24,13 +24,16 @@ run_expect_create_account() {
     local PASSWORD="${2}"
     local CONTAINER_ID="${3}"
 
-    expect <<EOF
+    expect - -- "${USERNAME}" "${PASSWORD}" "${CONTAINER_ID}" <<'EOF'
 set timeout 30
-spawn ${CONTAINER_CMD} attach --detach-keys="ctrl-p,ctrl-q" ${CONTAINER_ID}
+set username [lindex $argv 0]
+set password [lindex $argv 1]
+set container_id [lindex $argv 2]
+spawn $env(CONTAINER_CMD) attach --detach-keys="ctrl-p,ctrl-q" $container_id
 expect "AC>"
-send "account create ${USERNAME} ${PASSWORD}\r"
+send "account create $username $password\r"
 expect "AC>"
-send "account set gmlevel ${USERNAME} 3 -1\r"
+send "account set gmlevel $username 3 -1\r"
 expect "AC>"
 sleep 1
 send "\x10\x11"
