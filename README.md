@@ -80,7 +80,7 @@ All commands accept an optional config file path (defaults to `./conf/wowserver.
 
 | Command | Purpose |
 |---|---|
-| `acm setup` | Clone/update repos, rebuild all container images. Flags: `--clean` (remove old images), `--no-cache` (skip build cache), `--skip-update` (skip git pull), `--skip-build` (skip compose build), `--prune` (clean dangling and external images), `--skip-stale` (skip stale module removal). |
+| `acm setup` | Clone/update repos, rebuild all container images. Flags: `--clean` (remove old images), `--no-cache` (skip build cache), `--reset` (reset main repo to HEAD, discarding local changes), `--skip-update` (skip git pull), `--skip-build` (skip compose build), `--prune` (clean dangling and external images), `--skip-stale` (skip stale module removal). |
 | `acm start` | Ensure old containers are stopped, start server, wait for authserver to be ready. |
 | `acm run` | Start stack, optionally launch game, wait for game exit, wait for keypress, backup, cleanup old backups, shutdown. `--skip-game` to skip game launch. |
 | `acm stop` | Stop the running stack. |
@@ -288,6 +288,14 @@ MODULE_REPO=https://github.com/dr1s/lua-paragon-anniversary.git@main#serverside/
 
 ```bash
 ./acm setup --clean --no-cache --prune
+```
+
+### Reset the main repository and rebuild
+
+Use `--reset` to discard any local changes in the AzerothCore source tree before updating:
+
+```bash
+./acm setup --reset
 ```
 
 ### Update only the source repos and skip the container build

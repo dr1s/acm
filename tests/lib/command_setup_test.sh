@@ -20,10 +20,11 @@ log_error() { :; }
 
 source "$(dirname "${BASH_SOURCE[0]}")/../../lib/commands/setup.sh"
 
-# Track which setup phases run
+# Track which setup phases run and arguments passed
 PHASES=()
+RESET_ARG=""
 check_setup_dependencies() { :; }
-update_main_repo() { PHASES+=("update_main_repo"); }
+update_main_repo() { RESET_ARG="${1:-}"; PHASES+=("update_main_repo"); }
 update_modules() { PHASES+=("update_modules"); }
 remove_stale_modules() { PHASES+=("remove_stale_modules"); }
 sync_compose_override() { PHASES+=("sync_compose_override"); }
@@ -46,11 +47,20 @@ fi
 
 # Default run executes the full flow
 PHASES=()
+RESET_ARG=""
 command_setup
 [[ " ${PHASES[*]} " =~ " update_main_repo " ]] || fail "setup default should update main repo"
 [[ " ${PHASES[*]} " =~ " update_modules " ]] || fail "setup default should update modules"
 [[ " ${PHASES[*]} " =~ " remove_stale_modules " ]] || fail "setup default should remove stale modules"
 [[ " ${PHASES[*]} " =~ " build_images " ]] || fail "setup default should build images"
+[[ "${RESET_ARG}" == "false" ]] || fail "setup default should not pass reset=true to update_main_repo"
+
+# --reset passes reset=true to update_main_repo
+PHASES=()
+RESET_ARG=""
+command_setup --reset
+[[ " ${PHASES[*]} " =~ " update_main_repo " ]] || fail "setup --reset should update main repo"
+[[ "${RESET_ARG}" == "true" ]] || fail "setup --reset should pass reset=true to update_main_repo"
 
 # --skip-update skips git operations
 PHASES=()

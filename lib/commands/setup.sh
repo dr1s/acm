@@ -17,6 +17,7 @@ Clone/update AzerothCore and modules, then rebuild the container stack.
 Options:
   --clean         Remove old container images before rebuild
   --no-cache      Rebuild images without using build cache
+  --reset         Reset the main AzerothCore repository to HEAD before updating
   --skip-update   Skip git pull/clone, only rebuild images
   --skip-stale    Skip removal of stale modules not in config
   --skip-build    Skip container compose build
@@ -26,6 +27,7 @@ EOF
 }
 
 update_main_repo() {
+    local RESET="${1:-false}"
     local MAIN_REPO
     MAIN_REPO="$(read_config_value MAIN_REPO "${CONFIG_FILE}")"
     MAIN_REPO="${MAIN_REPO:-https://github.com/mod-playerbots/azerothcore-wotlk.git}"
@@ -34,7 +36,7 @@ update_main_repo() {
     local REPO_URL="${PARSED_REPO_URL}"
     local BRANCH="${PARSED_BRANCH}"
 
-    if [ -d ".git" ]; then
+    if [ "${RESET}" = true ] && [ -d ".git" ]; then
         log_info "Resetting main repository..."
         git reset --hard HEAD
     fi
@@ -238,7 +240,7 @@ check_setup_dependencies() {
 }
 
 command_setup() {
-    parse_command_args show_setup_help "--clean --no-cache --skip-update --skip-updates --skip-stale --skip-build --prune" "$@"
+    parse_command_args show_setup_help "--clean --no-cache --reset --skip-update --skip-updates --skip-stale --skip-build --prune" "$@"
     reject_positional_args show_setup_help
     init_command_environment "${PARSED_CONFIG_FILE}"
 
@@ -246,6 +248,7 @@ command_setup() {
 
     local CLEAN="${PARSED_FLAGS[--clean]:-false}"
     local NO_CACHE="${PARSED_FLAGS[--no-cache]:-false}"
+    local RESET="${PARSED_FLAGS[--reset]:-false}"
     local SKIP_UPDATE="${PARSED_FLAGS[--skip-update]:-${PARSED_FLAGS[--skip-updates]:-false}}"
     local SKIP_STALE="${PARSED_FLAGS[--skip-stale]:-false}"
     local SKIP_BUILD="${PARSED_FLAGS[--skip-build]:-false}"
@@ -253,7 +256,7 @@ command_setup() {
     local EXPECTED_MODULES=()
 
     if [ "${SKIP_UPDATE}" = false ]; then
-        update_main_repo
+        update_main_repo "${RESET}"
         update_modules
     fi
     if [ "${SKIP_STALE}" = false ]; then
