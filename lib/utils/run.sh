@@ -19,9 +19,17 @@ wait_for_authserver() {
     log_info "Services are running!"
     log_info "Waiting for authserver to be ready..."
 
+    local CONTAINER_ID
+    CONTAINER_ID=$(container_ps_q ac-authserver)
+    if [ -z "${CONTAINER_ID}" ]; then
+        log_error "Authserver container not found."
+        container_compose down
+        exit 1
+    fi
+
     while true; do
         local HEALTH
-        HEALTH=$("${CONTAINER_CMD}" inspect --format "{{.State.Health.Status}}" "ac-authserver" 2>/dev/null || true)
+        HEALTH=$("${CONTAINER_CMD}" inspect --format '{{.State.Health.Status}}' "${CONTAINER_ID}" 2>/dev/null || true)
         if [ "${HEALTH}" = "healthy" ]; then
             local ELAPSED=$(( $(date +%s) - START_TIME ))
             log_info "Authserver is up and running after ${ELAPSED}s."
