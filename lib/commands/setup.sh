@@ -79,7 +79,7 @@ sync_module_from_cache() {
         fi
         rm -rf "${MODULE_DIR}"
         mkdir -p "${MODULE_DIR}"
-        rsync -a "${SRC}/" "${MODULE_DIR}/"
+        rsync -a --delete "${SRC}/" "${MODULE_DIR}/"
     else
         rm -rf "${MODULE_DIR}"
         cp -a "${CACHE_DIR}" "${MODULE_DIR}"
