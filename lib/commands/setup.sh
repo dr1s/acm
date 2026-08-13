@@ -90,6 +90,8 @@ update_modules() {
     local MODULES_DIR="./modules"
     mkdir -p "${MODULES_DIR}"
 
+    # Note: EXPECTED_MODULES is populated separately by read_expected_modules()
+    # so that stale-module removal has a single, authoritative list.
     local line
     while IFS= read -r line; do
         [ -z "${line}" ] && continue
@@ -97,7 +99,6 @@ update_modules() {
         parse_module_repo "${line}"
         local REPO_NAME="${PARSED_MODULE_NAME}"
         local REPO_DIR="${MODULES_DIR}/${REPO_NAME}"
-        EXPECTED_MODULES+=("${REPO_NAME}")
 
         local CACHE_DIR
         CACHE_DIR="$(setup_cache_dir "${PARSED_REPO_NAME}" "${PARSED_BRANCH}")"
