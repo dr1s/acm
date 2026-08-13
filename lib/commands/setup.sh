@@ -235,7 +235,7 @@ ensure_module_configs() {
 }
 
 check_setup_dependencies() {
-    check_host_commands git envsubst rsync patch tar gzip
+    check_host_commands git envsubst rsync patch tar gzip || exit 1
     check_container_runtime
 }
 

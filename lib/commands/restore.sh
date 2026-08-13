@@ -81,7 +81,7 @@ command_restore() {
     init_command_environment "${PARSED_CONFIG_FILE}"
 
     check_container_runtime
-    check_host_commands zcat mktemp
+    check_host_commands zcat mktemp || exit 1
 
     if [ ${#PARSED_POSITIONAL_ARGS[@]} -eq 0 ]; then
         log_error "Usage: ./acm restore [config-file] <backup-file.sql.gz>"

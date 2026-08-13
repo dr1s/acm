@@ -27,7 +27,7 @@ command_run() {
     init_command_environment "${PARSED_CONFIG_FILE}"
 
     check_container_runtime
-    check_host_commands tar gzip
+    check_host_commands tar gzip || exit 1
 
     local BACKUP_DIR
     BACKUP_DIR="$(resolve_backup_dir)"

@@ -47,13 +47,16 @@ check_container_runtime() {
 
 # check_host_commands CMD [CMD ...]
 # Verifies that each host command is available.
+# Returns 0 if all commands are installed, 1 otherwise.
 check_host_commands() {
     local cmd
+    local MISSING=0
     for cmd in "$@"; do
         if ! command -v "${cmd}" >/dev/null 2>&1; then
             log_error "Required command '${cmd}' is not installed."
             log_error "$(__dependency_hint "${cmd}")"
-            exit 1
+            MISSING=1
         fi
     done
+    return "${MISSING}"
 }

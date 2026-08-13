@@ -209,9 +209,9 @@ bundle_paragon_install() {
 
     check_container_runtime
     if [ "${SKIP_GIT}" = false ]; then
-        check_host_commands git
+        check_host_commands git || exit 1
     fi
-    check_host_commands rsync sed mktemp
+    check_host_commands rsync sed mktemp || exit 1
 
     local DB_ROOT_PASSWORD
     DB_ROOT_PASSWORD="$(get_db_password)"

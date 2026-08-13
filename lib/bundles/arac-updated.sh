@@ -26,7 +26,7 @@ bundle_arac_updated_install() {
     reject_positional_args show_arac_updated_help
     init_command_environment "${PARSED_CONFIG_FILE}"
 
-    check_host_commands git
+    check_host_commands git || exit 1
 
     log_info "Installing arac-updated bundle..."
     if [ ! -d "${SCRIPT_DIR}/setup-cache/mod-arac-updated" ]; then
