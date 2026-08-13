@@ -61,7 +61,9 @@ launch_game() {
     fi
 
     log_info "Launching game..."
-    eval "${LAUNCH_GAME} &>/dev/null &"
+    local GAME_ARGS
+    IFS=' ' read -r -a GAME_ARGS <<< "${LAUNCH_GAME}"
+    "${GAME_ARGS[@]}" &>/dev/null &
     log_info "Game launched."
 }
 

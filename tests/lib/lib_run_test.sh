@@ -4,6 +4,9 @@ PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 SCRIPT_DIR="${PROJECT_DIR}"
 export SCRIPT_DIR
 
+TMP_DIR="$(mktemp -d)"
+trap 'rm -rf "${TMP_DIR}"' EXIT
+
 source "${PROJECT_DIR}/lib/utils/logging.sh"
 source "${PROJECT_DIR}/lib/utils/run.sh"
 source "${PROJECT_DIR}/tests/lib/assert.sh"
@@ -57,5 +60,34 @@ fi
 assert_eq "down" "$(cat "${CONTAINER_COMPOSE_LOG}")" "wait_for_authserver shuts down stack when authserver container is not found"
 
 rm -f "${FAKE_CONTAINER_CMD}" "${FAKE_CONTAINER_CMD_ARGS}" "${CONTAINER_COMPOSE_LOG}"
+
+# launch_game executes LAUNCH_GAME without eval
+GAME_LAUNCH_MARKER="${TMP_DIR}/game_launched"
+FAKE_GAME_CMD="${TMP_DIR}/fake_game"
+cat > "${FAKE_GAME_CMD}" <<EOF
+#!/usr/bin/env bash
+touch "${GAME_LAUNCH_MARKER}"
+EOF
+chmod +x "${FAKE_GAME_CMD}"
+
+read_config_value() {
+    if [ "$1" = "LAUNCH_GAME" ]; then
+        echo "${FAKE_GAME_CMD} arg1 arg2"
+    fi
+}
+
+CONFIG_FILE="${PROJECT_DIR}/conf/wowserver.conf"
+export CONFIG_FILE
+
+launch_game false
+sleep 0.5
+[ -f "${GAME_LAUNCH_MARKER}" ] || fail "launch_game should execute LAUNCH_GAME"
+
+# launch_game is skipped when SKIP_GAME is true
+rm -f "${GAME_LAUNCH_MARKER}"
+launch_game true
+[ ! -f "${GAME_LAUNCH_MARKER}" ] || fail "launch_game should be skipped when SKIP_GAME is true"
+
+rm -f "${FAKE_GAME_CMD}" "${GAME_LAUNCH_MARKER}"
 
 echo "PASS: run_test"
