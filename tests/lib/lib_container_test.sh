@@ -58,4 +58,22 @@ assert_eq "volume inspect myvol" "$(cat "${CALL_LOG}")" "container_volume_inspec
 container_volume_rm myvol
 assert_eq "volume rm myvol" "$(cat "${CALL_LOG}")" "container_volume_rm"
 
+# ensure_compose_containers_stopped stops and removes existing project containers
+: > "${CALL_LOG}"
+podman() {
+    case "$*" in
+        "ps -a --filter label=com.docker.compose.project=testproject --format {{.Names}}")
+            printf 'container1\ncontainer2\n'
+            ;;
+        *)
+            echo "$*" >> "${CALL_LOG}"
+            ;;
+    esac
+}
+wait_for_container_stopped() { return 0; }
+ensure_compose_containers_stopped
+assert_eq "stop container1 container2" "$(sed -n '1p' "${CALL_LOG}")" "ensure_compose_containers_stopped stops containers"
+assert_eq "rm -f container1" "$(sed -n '2p' "${CALL_LOG}")" "ensure_compose_containers_stopped removes container1"
+assert_eq "rm -f container2" "$(sed -n '3p' "${CALL_LOG}")" "ensure_compose_containers_stopped removes container2"
+
 echo "PASS: container_test"

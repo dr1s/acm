@@ -103,5 +103,10 @@ ensure_compose_containers_stopped() {
         fi
     done
 
-    log_info "All containers from project '${PROJECT}' are stopped."
+    log_info "Removing stopped containers from project '${PROJECT}'..."
+    for CONTAINER in "${ALL_CONTAINERS[@]}"; do
+        "${CONTAINER_CMD}" rm -f "${CONTAINER}" 2>/dev/null || true
+    done
+
+    log_info "All containers from project '${PROJECT}' have been removed."
 }
